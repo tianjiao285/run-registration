@@ -725,16 +725,20 @@ body {
 <script>
 // ========== 数据存储 (GitHub API + sessionStorage token) ==========
 const ADMIN_PASS = '013604';
-const DATA_URL = 'https://api.github.com/repos/tianjiao285/run-registration/contents/data.json';
+const REPO = 'tianjiao285/run-registration';
+const API_URL = 'https://api.github.com/repos/' + REPO + '/contents/data.json';
+const RAW_URL = 'https://raw.githubusercontent.com/' + REPO + '/main/data.json';
 
+// 获取数据：用raw.githubusercontent.com（支持CORS）
 async function getData() {
   try {
-    const resp = await fetch(DATA_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-    if (resp.status === 404) return [];
-    return JSON.parse(atob((await resp.json()).content));
+    const resp = await fetch(RAW_URL + '?t=' + Date.now());
+    if (!resp.ok) return [];
+    return await resp.json();
   } catch (e) { console.error('获取数据失败:', e); return []; }
 }
 
+// 保存数据：用GitHub API + token
 async function setData(data) {
   try {
     let token = sessionStorage.getItem('gh_token');
@@ -745,7 +749,7 @@ async function setData(data) {
     }
     let sha = null;
     try {
-      const r = await fetch(DATA_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+      const r = await fetch(API_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
       if (r.ok) sha = (await r.json()).sha;
     } catch {}
     const body = {
@@ -753,14 +757,14 @@ async function setData(data) {
       content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
       ...(sha ? { sha } : {})
     };
-    const resp = await fetch(DATA_URL, {
+    const resp = await fetch(API_URL, {
       method: 'PUT',
       headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
     if (!resp.ok) throw new Error((await resp.json()).message || '保存失败');
     return await resp.json();
-  } catch (e) { console.error('保存数据失败:', e); throw e; }
+  } catch (e) { console.error('保存数据失败:', e); toast('保存失败: ' + (e.message || '未知错误'), false); throw e; }
 }
 
 // ========== 页面切换 ==========
@@ -898,6 +902,12 @@ async function submitRegistration() {
 
   toast('报名成功！', true);
 }
+
+// 全局错误处理：捕获未处理的Promise错误
+window.addEventListener('unhandledrejection', function(e) {
+  console.error('未处理的错误:', e.reason);
+  toast('操作失败: ' + (e.reason?.message || '未知错误'), false);
+});
 
 // ========== 排行榜 ==========
 async function renderRanking() {
