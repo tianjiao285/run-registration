@@ -723,65 +723,44 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-// ========== 数据存储 (GitHub API) ==========
-const GITHUB_OWNER = 'tianjiao285';
-const GITHUB_REPO = 'run-registration';
-const DATA_FILE = 'data.json';
+// ========== 数据存储 (GitHub API + sessionStorage token) ==========
 const ADMIN_PASS = '013604';
+const DATA_URL = 'https://api.github.com/repos/tianjiao285/run-registration/contents/data.json';
 
-// 获取数据：从GitHub API读取data.json
 async function getData() {
   try {
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-    const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-    if (resp.status === 404) return []; // 文件不存在
-    const info = await resp.json();
-    const content = atob(info.content);
-    return JSON.parse(content);
-  } catch (e) {
-    console.error('获取数据失败:', e);
-    return [];
-  }
+    const resp = await fetch(DATA_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+    if (resp.status === 404) return [];
+    return JSON.parse(atob((await resp.json()).content));
+  } catch (e) { console.error('获取数据失败:', e); return []; }
 }
 
-// 保存数据：通过GitHub API更新data.json
 async function setData(data) {
   try {
-    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
-    // 先获取现有文件的sha
+    let token = sessionStorage.getItem('gh_token');
+    if (!token) {
+      token = prompt('请输入GitHub Token以保存数据：');
+      if (!token) throw new Error('需要GitHub Token');
+      sessionStorage.setItem('gh_token', token);
+    }
     let sha = null;
     try {
-      const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
-      if (resp.ok) {
-        const info = await resp.json();
-        sha = info.sha;
-      }
+      const r = await fetch(DATA_URL, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+      if (r.ok) sha = (await r.json()).sha;
     } catch {}
-
     const body = {
       message: 'Update registration data',
       content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
       ...(sha ? { sha } : {})
     };
-
-    const resp = await fetch(url, {
+    const resp = await fetch(DATA_URL, {
       method: 'PUT',
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Authorization': 'token ' + token, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-
-    if (!resp.ok) {
-      const err = await resp.json();
-      throw new Error(err.message || '保存失败');
-    }
+    if (!resp.ok) throw new Error((await resp.json()).message || '保存失败');
     return await resp.json();
-  } catch (e) {
-    console.error('保存数据失败:', e);
-    throw e;
-  }
+  } catch (e) { console.error('保存数据失败:', e); throw e; }
 }
 
 // ========== 页面切换 ==========
