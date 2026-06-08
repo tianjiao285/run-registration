@@ -723,17 +723,65 @@ body {
 <div class="toast" id="toast"></div>
 
 <script>
-// ========== 数据存储 ==========
-const STORAGE_KEY = 'run_july_2026';
+// ========== 数据存储 (GitHub API) ==========
+const GITHUB_OWNER = 'tianjiao285';
+const GITHUB_REPO = 'run-registration';
+const DATA_FILE = 'data.json';
 const ADMIN_PASS = '013604';
 
-function getData() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
-  catch { return []; }
+// 获取数据：从GitHub API读取data.json
+async function getData() {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+    const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+    if (resp.status === 404) return []; // 文件不存在
+    const info = await resp.json();
+    const content = atob(info.content);
+    return JSON.parse(content);
+  } catch (e) {
+    console.error('获取数据失败:', e);
+    return [];
+  }
 }
 
-function setData(data) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+// 保存数据：通过GitHub API更新data.json
+async function setData(data) {
+  try {
+    const url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${DATA_FILE}`;
+    // 先获取现有文件的sha
+    let sha = null;
+    try {
+      const resp = await fetch(url, { headers: { 'Accept': 'application/vnd.github.v3+json' } });
+      if (resp.ok) {
+        const info = await resp.json();
+        sha = info.sha;
+      }
+    } catch {}
+
+    const body = {
+      message: 'Update registration data',
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+      ...(sha ? { sha } : {})
+    };
+
+    const resp = await fetch(url, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.message || '保存失败');
+    }
+    return await resp.json();
+  } catch (e) {
+    console.error('保存数据失败:', e);
+    throw e;
+  }
 }
 
 // ========== 页面切换 ==========
@@ -761,8 +809,8 @@ function toast(msg, ok) {
 }
 
 // ========== 首页统计 ==========
-function updateHomeStats() {
-  const data = getData();
+async function updateHomeStats() {
+  const data = await getData();
   const taken = new Set(data.map(r => r.day));
   document.getElementById('totalRunners').textContent = data.length;
   document.getElementById('remainDays').textContent = 31 - taken.size;
@@ -771,8 +819,8 @@ function updateHomeStats() {
 // ========== 日期选择 ==========
 let selectedDay = null;
 
-function renderDateGrid() {
-  const data = getData();
+async function renderDateGrid() {
+  const data = await getData();
   const taken = new Set(data.map(r => r.day));
   const grid = document.getElementById('dateGrid');
   grid.innerHTML = '';
@@ -816,7 +864,7 @@ document.getElementById('inputName').addEventListener('input', checkSubmitReady)
 document.getElementById('inputPhone').addEventListener('input', checkSubmitReady);
 
 // ========== 报名提交 ==========
-function submitRegistration() {
+async function submitRegistration() {
   const name = document.getElementById('inputName').value.trim();
   const phone = document.getElementById('inputPhone').value.trim();
   const gender = document.getElementById('inputGender').value;
@@ -827,7 +875,7 @@ function submitRegistration() {
   if (!name) { toast('请输入姓名', false); return; }
   if (!phone || !/^1\d{10}$/.test(phone)) { toast('请输入正确的手机号', false); return; }
 
-  const data = getData();
+  const data = await getData();
 
   // 检查日期是否已被选
   if (data.some(r => r.day === selectedDay)) {
@@ -859,7 +907,7 @@ function submitRegistration() {
   };
 
   data.push(record);
-  setData(data);
+  await setData(data);
 
   // 显示成功
   document.getElementById('registerForm').style.display = 'none';
@@ -873,8 +921,8 @@ function submitRegistration() {
 }
 
 // ========== 排行榜 ==========
-function renderRanking() {
-  const data = getData().sort((a, b) => a.day - b.day);
+async function renderRanking() {
+  const data = (await getData()).sort((a, b) => a.day - b.day);
   const tbody = document.getElementById('rankBody');
   const emptyEl = document.getElementById('emptyRank');
 
@@ -898,11 +946,11 @@ function renderRanking() {
 }
 
 // ========== 管理员 ==========
-function doAdminLogin() {
+async function doAdminLogin() {
   const pass = document.getElementById('adminPass').value;
   if (pass === ADMIN_PASS) {
     sessionStorage.setItem('admin_ok', '1');
-    showAdminPanel();
+    await showAdminPanel();
   } else {
     toast('密码错误', false);
   }
@@ -914,14 +962,14 @@ function doAdminLogout() {
   document.getElementById('adminPanel').style.display = 'none';
 }
 
-function showAdminPanel() {
+async function showAdminPanel() {
   document.getElementById('adminLogin').style.display = 'none';
   document.getElementById('adminPanel').style.display = 'block';
-  renderAdmin();
+  await renderAdmin();
 }
 
-function renderAdmin() {
-  const data = getData().sort((a, b) => a.day - b.day);
+async function renderAdmin() {
+  const data = (await getData()).sort((a, b) => a.day - b.day);
   const tbody = document.getElementById('adminBody');
   const emptyEl = document.getElementById('emptyAdmin');
 
@@ -948,12 +996,12 @@ function renderAdmin() {
   </tr>`).join('');
 }
 
-function deleteRecord(id) {
+async function deleteRecord(id) {
   if (!confirm('确定删除该记录？')) return;
-  let data = getData();
+  let data = await getData();
   data = data.filter(r => r.id !== id);
-  setData(data);
-  renderAdmin();
+  await setData(data);
+  await renderAdmin();
   toast('已删除', true);
 }
 
