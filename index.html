@@ -1,177 +1,166 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
+const GITHUB_TOKEN=String.fromCharCode.apply(null,_t);
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>燃情七月半程接力 - 跑友报名</title>
+<title>燃情七月半程接力</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--primary:#FF6B35;--secondary:#FF2E63;--accent:#FFD23F;--darker:#0F0F1A;--card-bg:rgba(255,255,255,0.08);--card-border:rgba(255,255,255,0.12)}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;background:var(--darker);color:#fff;min-height:100vh;overflow-x:hidden}
-.bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
-.bg-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 50%,rgba(255,107,53,0.15) 0%,transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(255,46,99,0.12) 0%,transparent 50%);z-index:0;pointer-events:none}
-.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:rgba(15,15,26,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--card-border)}
-.nav-logo{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.nav-links{display:flex;gap:8px}
-.nav-btn{padding:8px 20px;border:1.5px solid var(--card-border);border-radius:24px;background:transparent;color:#ccc;font-size:14px;cursor:pointer;transition:all 0.3s}
-.nav-btn:hover,.nav-btn.active{border-color:var(--primary);color:var(--primary);background:rgba(255,107,53,0.1)}
-.page{display:none;position:relative;z-index:1;min-height:100vh;padding-top:80px}
-.page.active{display:block}
-.container{max-width:900px;margin:0 auto;padding:40px 24px}
-.hero{text-align:center;padding:60px 20px 40px}
-.hero-badge{display:inline-block;padding:6px 18px;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:20px;font-size:13px;font-weight:600;margin-bottom:20px}
-.hero h1{font-size:48px;font-weight:900;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,#fff,var(--accent),var(--primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero p{font-size:18px;color:rgba(255,255,255,0.7);max-width:600px;margin:0 auto 32px;line-height:1.6}
-.hero-stats{display:flex;justify-content:center;gap:40px;margin-bottom:40px}
-.stat-item{text-align:center}
-.stat-num{font-size:36px;font-weight:900;background:linear-gradient(135deg,var(--primary),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.stat-label{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px}
-.btn-primary{display:inline-block;padding:16px 48px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;border-radius:50px;font-size:18px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 8px 32px rgba(255,107,53,0.3);transition:all 0.3s}
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,107,53,0.45)}
-.form-card{background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px;padding:40px;margin-bottom:30px;backdrop-filter:blur(10px)}
-.form-card h2{font-size:24px;margin-bottom:8px}
-.form-card .subtitle{color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:28px}
-.form-group{margin-bottom:24px}
-.form-group label{display:block;font-size:14px;font-weight:600;margin-bottom:8px;color:rgba(255,255,255,0.8)}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:14px 18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--card-border);border-radius:12px;color:#fff;font-size:15px;font-family:inherit;transition:border-color 0.3s}
-.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.date-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
-.date-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;border:1.5px solid var(--card-border);background:rgba(255,255,255,0.03);cursor:pointer;transition:all 0.3s}
-.date-cell:hover:not(.taken):not(.selected){border-color:var(--primary);background:rgba(255,107,53,0.08)}
-.date-cell.selected{border-color:var(--primary);background:linear-gradient(135deg,rgba(255,107,53,0.2),rgba(255,46,99,0.2))}
-.date-cell.taken{opacity:0.3;cursor:not-allowed}
-.date-cell .day-num{font-size:20px;font-weight:800}
-.date-cell .day-label{font-size:10px;color:rgba(255,255,255,0.4)}
-.total-bar{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border-radius:8px;padding:12px 16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
-.total-bar .total-num{font-size:28px;font-weight:bold}
-.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;margin-top:8px;transition:all 0.3s}
-.btn-submit:disabled{opacity:0.4;cursor:not-allowed}
-.btn-danger{padding:8px 16px;background:rgba(220,53,69,0.15);color:#ff6b6b;border:1px solid rgba(220,53,69,0.3);border-radius:8px;font-size:13px;cursor:pointer}
-.success-card{text-align:center;padding:60px 40px;background:var(--card-bg);border:1px solid var(--card-border);border-radius:20px}
-.success-icon{font-size:64px;margin-bottom:20px}
-.success-card h2{font-size:28px;margin-bottom:12px;color:var(--accent)}
-.success-card .date-display{font-size:48px;font-weight:900;color:var(--primary);margin:16px 0}
-.success-card .info-text{color:rgba(255,255,255,0.6);font-size:15px;line-height:1.6;margin-bottom:30px}
-.rank-table{width:100%;border-collapse:collapse;font-size:14px}
-.rank-table th{text-align:left;padding:12px 16px;background:rgba(255,107,53,0.1);color:var(--primary);font-weight:600}
-.rank-table td{padding:14px 16px;border-bottom:1px solid var(--card-border)}
-.rank-num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-weight:800;font-size:13px}
-.rank-1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000}
-.rank-2{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);color:#000}
-.rank-3{background:linear-gradient(135deg,#CD7F32,#B87333);color:#fff}
-.rank-other{background:rgba(255,255,255,0.08);color:#999}
-.empty-state{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
-.empty-state .icon{font-size:48px;margin-bottom:16px}
-.toast{position:fixed;top:100px;right:24px;padding:14px 24px;border-radius:12px;font-size:14px;z-index:999;transform:translateX(120%);transition:transform 0.4s}
-.toast.show{transform:translateX(0)}
-.toast.ok{background:rgba(40,167,69,0.9);color:#fff}
-.toast.err{background:rgba(220,53,69,0.9);color:#fff}
-@media(max-width:640px){.hero h1{font-size:32px}.form-row{grid-template-columns:1fr}.nav{padding:12px 16px}.container{padding:24px 16px}.form-card{padding:24px}}
+:root{--p:#FF6B35;--s:#FF2E63;--a:#FFD23F;--d:#0F0F1A;--cb:rgba(255,255,255,0.08);--cl:rgba(255,255,255,0.12)}
+body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Microsoft YaHei,sans-serif;background:var(--d);color:#fff;min-height:100vh;overflow-x:hidden}
+canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.ov{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 50%,rgba(255,107,53,0.15),transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(255,46,99,0.12),transparent 50%);z-index:0;pointer-events:none}
+.nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:rgba(15,15,26,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--cl)}
+.nl{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nls{display:flex;gap:8px}
+.nb{padding:8px 20px;border:1.5px solid var(--cl);border-radius:24px;background:transparent;color:#ccc;font-size:14px;cursor:pointer;transition:.3s}
+.nb:hover,.nb.active{border-color:var(--p);color:var(--p);background:rgba(255,107,53,0.1)}
+.pg{display:none;position:relative;z-index:1;min-height:100vh;padding-top:80px}
+.pg.active{display:block}
+.ct{max-width:900px;margin:0 auto;padding:40px 24px}
+.hr{text-align:center;padding:60px 20px 40px}
+.hb{display:inline-block;padding:6px 18px;background:linear-gradient(135deg,var(--p),var(--s));border-radius:20px;font-size:13px;font-weight:600;margin-bottom:20px}
+.hr h1{font-size:48px;font-weight:900;line-height:1.2;margin-bottom:16px;background:linear-gradient(135deg,#fff,var(--a),var(--p));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hr p{font-size:18px;color:rgba(255,255,255,0.7);max-width:600px;margin:0 auto 32px;line-height:1.6}
+.hs{display:flex;justify-content:center;gap:40px;margin-bottom:40px}
+.si{text-align:center}
+.sn{font-size:36px;font-weight:900;background:linear-gradient(135deg,var(--p),var(--a));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.sl{font-size:13px;color:rgba(255,255,255,0.5);margin-top:4px}
+.bpx{display:inline-block;padding:16px 48px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border:none;border-radius:50px;font-size:18px;font-weight:700;cursor:pointer;text-decoration:none;box-shadow:0 8px 32px rgba(255,107,53,0.3);transition:.3s}
+.bpx:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(255,107,53,0.45)}
+.fc{background:var(--cb);border:1px solid var(--cl);border-radius:20px;padding:40px;margin-bottom:30px;backdrop-filter:blur(10px)}
+.fc h2{font-size:24px;margin-bottom:8px}
+.fc .st{color:rgba(255,255,255,0.5);font-size:14px;margin-bottom:28px}
+.fg{margin-bottom:24px}
+.fg label{display:block;font-size:14px;font-weight:600;margin-bottom:8px;color:rgba(255,255,255,0.8)}
+.fg input,.fg select,.fg textarea{width:100%;padding:14px 18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--cl);border-radius:12px;color:#fff;font-size:15px;font-family:inherit;transition:border-color .3s}
+.fg input:focus,.fg select:focus{outline:none;border-color:var(--p)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.dg{display:grid;grid-template-columns:repeat(7,1fr);gap:8px}
+.dc{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;border:1.5px solid var(--cl);background:rgba(255,255,255,0.03);cursor:pointer;transition:.3s}
+.dc:hover:not(.tk):not(.sl){border-color:var(--p);background:rgba(255,107,53,0.08)}
+.dc.sl{border-color:var(--p);background:linear-gradient(135deg,rgba(255,107,53,0.2),rgba(255,46,99,0.2))}
+.dc.tk{opacity:0.3;cursor:not-allowed}
+.dc .dn{font-size:20px;font-weight:800}
+.dc .dl{font-size:10px;color:rgba(255,255,255,0.4)}
+.tb{background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border-radius:8px;padding:12px 16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center}
+.tb .tn{font-size:28px;font-weight:bold}
+.bs{width:100%;padding:16px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border:none;border-radius:14px;font-size:17px;font-weight:700;cursor:pointer;margin-top:8px;transition:.3s}
+.bs:disabled{opacity:0.4;cursor:not-allowed}
+.bd{padding:8px 16px;background:rgba(220,53,69,0.15);color:#ff6b6b;border:1px solid rgba(220,53,69,0.3);border-radius:8px;font-size:13px;cursor:pointer}
+.sc{text-align:center;padding:60px 40px;background:var(--cb);border:1px solid var(--cl);border-radius:20px}
+.si{font-size:64px;margin-bottom:20px}
+.sc h2{font-size:28px;margin-bottom:12px;color:var(--a)}
+.sc .dd{font-size:48px;font-weight:900;color:var(--p);margin:16px 0}
+.rt{width:100%;border-collapse:collapse;font-size:14px}
+.rt th{text-align:left;padding:12px 16px;background:rgba(255,107,53,0.1);color:var(--p);font-weight:600}
+.rt td{padding:14px 16px;border-bottom:1px solid var(--cl)}
+.rn{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;font-weight:800;font-size:13px}
+.r1{background:linear-gradient(135deg,#FFD700,#FFA500);color:#000}
+.r2{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);color:#000}
+.r3{background:linear-gradient(135deg,#CD7F32,#B87333);color:#fff}
+.ro{background:rgba(255,255,255,0.08);color:#999}
+.es{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.4)}
+.es .ic{font-size:48px;margin-bottom:16px}
+.to{position:fixed;top:100px;right:24px;padding:14px 24px;border-radius:12px;font-size:14px;z-index:999;transform:translateX(120%);transition:transform .4s;max-width:360px}
+.to.show{transform:translateX(0)}
+.to.ok{background:rgba(40,167,69,0.9);color:#fff}
+.to.er{background:rgba(220,53,69,0.9);color:#fff}
+@media(max-width:640px){.hr h1{font-size:32px}.fr{grid-template-columns:1fr}.nav{padding:12px 16px}.ct{padding:24px 16px}.fc{padding:24px}}
 </style>
 </head>
 <body>
-<canvas class="bg-canvas" id="bgCanvas"></canvas>
-<div class="bg-overlay"></div>
-<nav class="nav">
-<div class="nav-logo">🏃 燃情七月</div>
-<div class="nav-links">
-<button class="nav-btn active" onclick="showPage('home')">首页</button>
-<button class="nav-btn" onclick="showPage('register')">报名</button>
-<button class="nav-btn" onclick="showPage('ranking')">排行</button>
-<button class="nav-btn" onclick="showPage('admin')">后台</button>
+<canvas id="bg"></canvas>
+<div class="ov"></div>
+<nav class="nav"><div class="nl">🏃 燃情七月</div><div class="nls">
+<button class="nb active" onclick="showPage('home')">首页</button>
+<button class="nb" onclick="showPage('register')">报名</button>
+<button class="nb" onclick="showPage('ranking')">排行</button>
+<button class="nb" onclick="showPage('admin')">后台</button>
 </div></nav>
-<div class="page active" id="page-home">
-<div class="hero">
-<div class="hero-badge">2026 夏季限定</div>
+<div class="pg active" id="page-home"><div class="hr">
+<div class="hb">2026 夏季限定</div>
 <h1>🔥 燃情七月<br>半程接力 🏅</h1>
 <p>每一步都是对自我的超越，每一公里都书写着坚持的故事。<br>选择你的奔跑日，加入这场青春盛会！</p>
-<div class="hero-stats">
-<div class="stat-item"><div class="stat-num" id="totalRunners">0</div><div class="stat-label">已报名跑友</div></div>
-<div class="stat-item"><div class="stat-num" id="remainDays">31</div><div class="stat-label">剩余名额</div></div>
-</div>
-<a href="#" class="btn-primary" onclick="showPage('register');return false">立即报名 →</a>
+<div class="hs"><div class="si"><div class="sn" id="totalRunners">0</div><div class="sl">已报名跑友</div></div>
+<div class="si"><div class="sn" id="remainDays">31</div><div class="sl">剩余名额</div></div></div>
+<a href="#" class="bpx" onclick="showPage('register');return false">立即报名 →</a>
 </div></div>
-<div class="page" id="page-register">
-<div class="container">
-<div class="form-card" id="registerForm">
-<h2>📝 报名参赛</h2>
-<p class="subtitle">选择7月任意一天作为你的奔跑日</p>
-<div class="form-group"><label>选择日期 *</label><div class="date-grid" id="dateGrid"></div></div>
-<div class="form-row">
-<div class="form-group"><label>姓名 *</label><input type="text" id="inputName" placeholder="请输入真实姓名" maxlength="20"></div>
-<div class="form-group"><label>手机号 *</label><input type="tel" id="inputPhone" placeholder="请输入手机号" maxlength="11"></div>
-</div>
-<div class="form-row">
-<div class="form-group"><label>性别</label><select id="inputGender"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select></div>
-<div class="form-group"><label>年龄段</label><select id="inputAge"><option value="">请选择</option><option value="18-25">18-25岁</option><option value="26-35">26-35岁</option><option value="36-45">36-45岁</option><option value="46-55">46-55岁</option><option value="55+">55岁以上</option></select></div>
-</div>
-<div class="form-group"><label>备注</label><textarea id="inputNote" rows="2" placeholder="一句话介绍自己（选填）" maxlength="100"></textarea></div>
-<button class="btn-submit" id="btnSubmit" onclick="submitRegistration()" disabled>确认报名</button>
-</div>
-<div class="success-card" id="successCard" style="display:none">
-<div class="success-icon">🎉</div><h2>报名成功！</h2>
-<div class="date-display" id="successDate"></div>
-<p class="info-text">你已成功报名 <strong id="successName"></strong><br>奔跑日：<strong id="successDateText"></strong><br>请按时参加活动！</p>
-<a href="#" class="btn-primary" onclick="showPage('ranking');return false">查看排行榜 →</a>
-</div></div></div>
-<div class="page" id="page-ranking">
-<div class="container">
+<div class="pg" id="page-register"><div class="ct">
+<div class="fc" id="registerForm"><h2>📝 报名参赛</h2><p class="st">选择7月任意一天作为你的奔跑日</p>
+<div class="fg"><label>选择日期 *</label><div class="dg" id="dateGrid"></div></div>
+<div class="fr"><div class="fg"><label>姓名 *</label><input type="text" id="inputName" placeholder="请输入真实姓名" maxlength="20"></div>
+<div class="fg"><label>手机号 *</label><input type="tel" id="inputPhone" placeholder="请输入手机号" maxlength="11"></div></div>
+<div class="fr"><div class="fg"><label>性别</label><select id="inputGender"><option value="">请选择</option><option value="男">男</option><option value="女">女</option></select></div>
+<div class="fg"><label>年龄段</label><select id="inputAge"><option value="">请选择</option><option value="18-25">18-25岁</option><option value="26-35">26-35岁</option><option value="36-45">36-45岁</option><option value="46-55">46-55岁</option><option value="55+">55岁以上</option></select></div></div>
+<div class="fg"><label>备注</label><textarea id="inputNote" rows="2" placeholder="一句话介绍自己（选填）" maxlength="100"></textarea></div>
+<button class="bs" id="btnSubmit" onclick="submitRegistration()" disabled>确认报名</button></div>
+<div class="sc" id="successCard" style="display:none"><div class="si">🎉</div><h2>报名成功！</h2>
+<div class="dd" id="successDate"></div>
+<p class="st">你已成功报名 <strong id="successName"></strong><br>奔跑日：<strong id="successDateText"></strong><br>请按时参加活动！</p>
+<a href="#" class="bpx" onclick="showPage('ranking');return false">查看排行榜 →</a></div>
+</div></div>
+<div class="pg" id="page-ranking"><div class="ct">
 <h2 style="font-size:24px;margin-bottom:24px">🏆 报名排行榜</h2>
-<div class="form-card" style="overflow-x:auto">
-<table class="rank-table"><thead><tr><th style="width:60px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead><tbody id="rankBody"></tbody></table>
-<div class="empty-state" id="emptyRank"><div class="icon">🏃</div><div>暂无报名记录</div></div>
-</div></div></div>
-<div class="page" id="page-admin">
-<div class="container">
-<div id="adminLogin"><div class="form-card" style="max-width:400px;margin:40px auto"><h2>🔐 管理员登录</h2><div class="form-group"><label>密码</label><input type="password" id="adminPass" placeholder="请输入密码"></div><button class="btn-submit" onclick="doAdminLogin()">登录</button></div></div>
+<div class="fc" style="overflow-x:auto"><table class="rt"><thead><tr><th style="width:60px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead><tbody id="rankBody"></tbody></table>
+<div class="es" id="emptyRank"><div class="ic">🏃</div><div>暂无报名记录</div></div></div></div>
+<div class="pg" id="page-admin"><div class="ct">
+<div id="adminLogin"><div class="fc" style="max-width:400px;margin:40px auto"><h2>🔐 管理员登录</h2>
+<div class="fg"><label>密码</label><input type="password" id="adminPass" placeholder="请输入密码"></div>
+<button class="bs" onclick="doAdminLogin()">登录</button></div></div>
 <div id="adminPanel" style="display:none">
-<div class="admin-bar"><h2>📊 后台管理</h2><div class="admin-stats"><div class="admin-stat"><div class="num" id="adminTotal">0</div><div class="label">总报名</div></div></div><button class="btn-danger" onclick="doAdminLogout()">退出</button></div>
-<div class="form-card" style="overflow-x:auto"><table class="rank-table"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table><div class="empty-state" id="emptyAdmin"><div class="icon">📭</div><div>暂无数据</div></div></div>
-</div></div></div>
-<div class="toast" id="toast"></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><h2>📊 后台管理</h2><button class="bd" onclick="doAdminLogout()">退出</button></div>
+<div class="fc" style="overflow-x:auto"><table class="rt"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table>
+<div class="es" id="emptyAdmin"><div class="ic">📭</div><div>暂无数据</div></div></div></div></div>
+<div class="to" id="toast"></div>
 <script>
-const ADMIN_PASS='013604',REPO='tianjiao285/run-registration';
-const API_URL='https://api.github.com/repos/'+REPO+'/contents/data.json';
-const RAW_URL='https://raw.githubusercontent.com/'+REPO+'/main/data.json';
-const _t=103,104,112,95,54,121,71,87,66,86,51,75,122,102,120,70,71,71,51,109,70,108,70,122,99,82,113,121,109,105,51,74,115,73,49,76,53,85,57,71;
-const GITHUB_TOKEN=String.fromCharCode.apply(null,_t);
+const ADMIN_PASS='013604';
+const STORAGE_KEY='run_july_2026_data';
 
-async function getData(){try{const r=await fetch(RAW_URL+'?t='+Date.now());if(!r.ok)return[];return await r.json();}catch(e){console.error(e);return[];}}
+function getData(){
+  try{
+    var d=localStorage.getItem(STORAGE_KEY);
+    return d?JSON.parse(d):[];
+  }catch(e){return[];}
+}
 
-async function setData(data){try{let s=null;try{const r=await fetch(API_URL,{headers:{'Accept':'application/vnd.github.v3+json'}});if(r.ok)s=(await r.json()).sha;}catch(e){}const b={message:'Update',content:btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),...(s?{s}:{})};const r=await fetch(API_URL,{method:'PUT',headers:{'Authorization':'token '+GITHUB_TOKEN,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify(b)});if(!r.ok)throw new Error((await r.json()).message||'保存失败');return await r.json();}catch(e){console.error(e);toast('保存失败: '+(e.message||'未知错误'),false);throw e;}}
+function setData(data){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+}
 
-function showPage(n){document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});document.getElementById('page-'+n).classList.add('active');var b=document.querySelectorAll('.nav-btn'),i=['home','register','ranking','admin'].indexOf(n);if(i>=0)b[i].classList.add('active');if(n==='ranking')renderRanking();if(n==='home')updateHomeStats();if(n==='admin'&&sessionStorage.getItem('admin_ok')==='1')showAdminPanel();}
+function showPage(n){document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active')});document.getElementById('page-'+n).classList.add('active');var btns=document.querySelectorAll('.nb'),i=['home','register','ranking','admin'].indexOf(n);if(i>=0)btns[i].classList.add('active');if(n==='ranking')renderRanking();if(n==='home')updateHomeStats();if(n==='admin'&&sessionStorage.getItem('admin_ok')==='1')showAdminPanel();}
 
-function toast(m,o){var e=document.getElementById('toast');e.textContent=m;e.className='toast '+(o?'ok':'err')+' show';setTimeout(function(){e.className='toast'},3000);}
+function toast(m,o){var e=document.getElementById('toast');e.textContent=m;e.className='to '+(o?'ok':'er')+' show';setTimeout(function(){e.className='to'},3000);}
 
-async function updateHomeStats(){var d=await getData();var t=new Set(d.map(function(r){return r.day}));document.getElementById('totalRunners').textContent=d.length;document.getElementById('remainDays').textContent=31-t.size;}
+function updateHomeStats(){var d=getData();var t=new Set(d.map(function(r){return r.day}));document.getElementById('totalRunners').textContent=d.length;document.getElementById('remainDays').textContent=31-t.size;}
 
 var selectedDay=null;
-async function renderDateGrid(){var d=await getData();var t=new Set(d.map(function(r){return r.day}));var g=document.getElementById('dateGrid');g.innerHTML='';var w=['日','一','二','三','四','五','六'];var s=new Date(2026,6,1).getDay();for(var i=1;i<=31;i++){var c=document.createElement('div');c.className='date-cell';if(t.has(i)){c.classList.add('taken');c.innerHTML='<span class="day-num">'+i+'</span><span class="day-label">'+w[(s+i-1)%7]+'</span>🔒';}else{c.innerHTML='<span class="day-num">'+i+'</span><span class="day-label">'+w[(s+i-1)%7]+'</span>';(function(x){c.onclick=function(){selectDate(x)}})(i);}g.appendChild(c);}}
 
-function selectDate(d){selectedDay=d;document.querySelectorAll('.date-cell').forEach(function(c){c.classList.remove('selected')});document.querySelectorAll('.date-cell')[d-1].classList.add('selected');checkReady();}
+function renderDateGrid(){var d=getData();var t=new Set(d.map(function(r){return r.day}));var g=document.getElementById('dateGrid');g.innerHTML='';var w=['日','一','二','三','四','五','六'];var s=new Date(2026,6,1).getDay();for(var i=1;i<=31;i++){var c=document.createElement('div');c.className='dc';if(t.has(i)){c.classList.add('tk');c.innerHTML='<span class="dn">'+i+'</span><span class="dl">'+w[(s+i-1)%7]+'</span>🔒';}else{c.innerHTML='<span class="dn">'+i+'</span><span class="dl">'+w[(s+i-1)%7]+'</span>';(function(x){c.onclick=function(){selectDate(x)}})(i);}g.appendChild(c);}}
+
+function selectDate(d){selectedDay=d;document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});document.querySelectorAll('.dc')[d-1].classList.add('sl');checkReady();}
 
 function checkReady(){var n=document.getElementById('inputName').value.trim(),p=document.getElementById('inputPhone').value.trim();document.getElementById('btnSubmit').disabled=!(selectedDay&&n&&p);}
-document.getElementById('inputName').addEventListener('input',checkReady);document.getElementById('inputPhone').addEventListener('input',checkReady);
+document.getElementById('inputName').addEventListener('input',checkReady);
+document.getElementById('inputPhone').addEventListener('input',checkReady);
 
-async function submitRegistration(){var n=document.getElementById('inputName').value.trim(),p=document.getElementById('inputPhone').value.trim(),g=document.getElementById('inputGender').value,a=document.getElementById('inputAge').value,nt=document.getElementById('inputNote').value.trim();if(!selectedDay){toast('请先选择日期',false);return;}if(!n){toast('请输入姓名',false);return;}if(!p||!/^1\d{10}$/.test(p)){toast('请输入正确的手机号',false);return;}var d=await getData();if(d.some(function(r){return r.day===selectedDay})){toast('该日期已被选择',false);selectedDay=null;document.querySelectorAll('.date-cell').forEach(function(c){c.classList.remove('selected')});checkReady();return;}if(d.some(function(r){return r.name===n})){toast('该姓名已报名',false);return;}if(d.some(function(r){return r.phone===p})){toast('该手机号已报名',false);return;}var rc={id:Date.now(),day:selectedDay,name:n,phone:p,gender:g,age:a,note:nt,time:new Date().toLocaleString('zh-CN')};d.push(rc);await setData(d);document.getElementById('registerForm').style.display='none';document.getElementById('successCard').style.display='block';document.getElementById('successDate').textContent='7月'+selectedDay+'日';document.getElementById('successName').textContent=n;document.getElementById('successDateText').textContent='2026年7月'+selectedDay+'日';toast('报名成功！',true);}
+function submitRegistration(){var n=document.getElementById('inputName').value.trim(),p=document.getElementById('inputPhone').value.trim(),g=document.getElementById('inputGender').value,a=document.getElementById('inputAge').value,nt=document.getElementById('inputNote').value.trim();if(!selectedDay){toast('请先选择日期',false);return;}if(!n){toast('请输入姓名',false);return;}if(!p||!/^1\d{10}$/.test(p)){toast('请输入正确的手机号',false);return;}var d=getData();if(d.some(function(r){return r.day===selectedDay})){toast('该日期已被选择',false);selectedDay=null;document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});checkReady();return;}if(d.some(function(r){return r.name===n})){toast('该姓名已报名',false);return;}if(d.some(function(r){return r.phone===p})){toast('该手机号已报名',false);return;}var rc={id:Date.now(),day:selectedDay,name:n,phone:p,gender:g,age:a,note:nt,time:new Date().toLocaleString('zh-CN')};d.push(rc);setData(d);document.getElementById('registerForm').style.display='none';document.getElementById('successCard').style.display='block';document.getElementById('successDate').textContent='7月'+selectedDay+'日';document.getElementById('successName').textContent=n;document.getElementById('successDateText').textContent='2026年7月'+selectedDay+'日';toast('报名成功！',true);}
 
-async function renderRanking(){var d=(await getData()).sort(function(a,b){return a.day-b.day});var b=document.getElementById('rankBody'),e=document.getElementById('emptyRank');if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r,i){var c=i<3?'rank-'+(i+1):'rank-other';return'<tr><td><span class="rank-num '+c+'">'+(i+1)+'</span></td><td><strong>'+r.name+'</strong></td><td>'+(r.gender||'-')+'</td><td><span style="color:var(--primary);font-weight:700">7月'+r.day+'日</span></td><td style="color:rgba(255,255,255,0.4);font-size:12px">'+r.time+'</td></tr>';}).join('');}
+function renderRanking(){var d=getData().sort(function(a,b){return a.day-b.day});var b=document.getElementById('rankBody'),e=document.getElementById('emptyRank');if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r,i){var c=i<3?'r'+(i+1):'ro';return'<tr><td><span class="rn '+c+'">'+(i+1)+'</span></td><td><strong>'+r.name+'</strong></td><td>'+(r.gender||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td style="color:rgba(255,255,255,0.4);font-size:12px">'+r.time+'</td></tr>';}).join('');}
 
 function doAdminLogin(){if(document.getElementById('adminPass').value===ADMIN_PASS){sessionStorage.setItem('admin_ok','1');showAdminPanel();}else toast('密码错误',false);}
 function doAdminLogout(){sessionStorage.removeItem('admin_ok');document.getElementById('adminLogin').style.display='block';document.getElementById('adminPanel').style.display='none';}
 
-async function showAdminPanel(){document.getElementById('adminLogin').style.display='none';document.getElementById('adminPanel').style.display='block';await renderAdmin();}
+function showAdminPanel(){document.getElementById('adminLogin').style.display='none';document.getElementById('adminPanel').style.display='block';renderAdmin();}
 
-async function renderAdmin(){var d=(await getData()).sort(function(a,b){return a.day-b.day});var b=document.getElementById('adminBody'),e=document.getElementById('emptyAdmin');document.getElementById('adminTotal').textContent=d.length;document.getElementById('adminDays').textContent=new Set(d.map(function(r){return r.day})).size;if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r){return'<tr><td style="font-size:12px;color:rgba(255,255,255,0.3)">'+r.id+'</td><td><strong>'+r.name+'</strong></td><td style="font-size:12px">'+r.phone+'</td><td>'+(r.gender||'-')+'</td><td>'+(r.age||'-')+'</td><td><span style="color:var(--primary);font-weight:700">7月'+r.day+'日</span></td><td>'+(r.note||'-')+'</td><td style="font-size:11px;color:rgba(255,255,255,0.4)">'+r.time+'</td><td><button class="btn-danger" onclick="deleteRecord('+r.id+')">删除</button></td></tr>';}).join('');}
+function renderAdmin(){var d=getData().sort(function(a,b){return a.day-b.day});var b=document.getElementById('adminBody'),e=document.getElementById('emptyAdmin');document.getElementById('adminTotal').textContent=d.length;document.getElementById('adminDays').textContent=new Set(d.map(function(r){return r.day})).size;if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r){return'<tr><td style="font-size:12px;color:rgba(255,255,255,0.3)">'+r.id+'</td><td><strong>'+r.name+'</strong></td><td style="font-size:12px">'+r.phone+'</td><td>'+(r.gender||'-')+'</td><td>'+(r.age||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td>'+(r.note||'-')+'</td><td style="font-size:11px;color:rgba(255,255,255,0.4)">'+r.time+'</td><td><button class="bd" onclick="deleteRecord('+r.id+')">删除</button></td></tr>';}).join('');}
 
-async function deleteRecord(id){if(!confirm('确定删除？'))return;var d=await getData();d=d.filter(function(r){return r.id!==id});await setData(d);await renderAdmin();toast('已删除',true);}
+function deleteRecord(id){if(!confirm('确定删除？'))return;var d=getData();d=d.filter(function(r){return r.id!==id});setData(d);renderAdmin();toast('已删除',true);}
 
 window.addEventListener('DOMContentLoaded',function(){renderDateGrid();updateHomeStats();});
 window.addEventListener('unhandledrejection',function(e){console.error(e.reason);toast('操作失败: '+(e.reason&&e.reason.message||'未知错误'),false);});
 
-(function(){var c=document.getElementById('bgCanvas'),x=c.getContext('2d');var w,h,P=[];function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}function Pt(){this.r();}Pt.prototype.r=function(){this.x=Math.random()*w;this.y=Math.random()*h;this.s=Math.random()*2+.5;this.sx=(Math.random()-.5)*.5;this.sy=(Math.random()-.5)*.5;this.op=Math.random()*.5+.1;this.c=['#FF6B35','#FF2E63','#FFD23F'][~~(Math.random()*3)];};Pt.prototype.u=function(){this.x+=this.sx;this.y+=this.sy;if(this.x<0||this.x>w||this.y<0||this.y>h)this.r();};Pt.prototype.d=function(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=this.c;x.globalAlpha=this.op;x.fill();x.globalAlpha=1;};resize();for(var i=0;i<50;i++)P.push(new Pt());function anim(){x.clearRect(0,0,w,h);for(var i=0;i<P.length;i++){P[i].u();P[i].d();}for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){var dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle='rgba(255,107,53,'+(.08*(1-d/120))+')';x.lineWidth=.5;x.stroke();}}requestAnimationFrame(anim);}window.addEventListener('resize',resize);anim();})();
+(function(){var c=document.getElementById('bg'),x=c.getContext('2d');var w,h,P=[];function resize(){w=c.width=window.innerWidth;h=c.height=window.innerHeight;}function Pt(){this.r();}Pt.prototype.r=function(){this.x=Math.random()*w;this.y=Math.random()*h;this.s=Math.random()*2+.5;this.sx=(Math.random()-.5)*.5;this.sy=(Math.random()-.5)*.5;this.op=Math.random()*.5+.1;this.c=['#FF6B35','#FF2E63','#FFD23F'][~~(Math.random()*3)];};Pt.prototype.u=function(){this.x+=this.sx;this.y+=this.sy;if(this.x<0||this.x>w||this.y<0||this.y>h)this.r();};Pt.prototype.d=function(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=this.c;x.globalAlpha=this.op;x.fill();x.globalAlpha=1;};resize();for(var i=0;i<50;i++)P.push(new Pt());function anim(){x.clearRect(0,0,w,h);for(var i=0;i<P.length;i++){P[i].u();P[i].d();}for(var i=0;i<P.length;i++)for(var j=i+1;j<P.length;j++){var dx=P[i].x-P[j].x,dy=P[i].y-P[j].y,d=Math.sqrt(dx*dx+dy*dy);if(d<120){x.beginPath();x.moveTo(P[i].x,P[i].y);x.lineTo(P[j].x,P[j].y);x.strokeStyle='rgba(255,107,53,'+(.08*(1-d/120))+')';x.lineWidth=.5;x.stroke();}}requestAnimationFrame(anim);}window.addEventListener('resize',resize);anim();})();
 </script>
 </body>
 </html>
