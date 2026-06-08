@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>燃情七月半程接力 - 跑友报名</title>
+<style>
+/* ========== 全局样式 ========== */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --primary: #FF6B35;
+  --secondary: #FF2E63;
+  --accent: #FFD23F;
+  --dark: #1A1A2E;
+  --darker: #0F0F1A;
+  --light: #F7F7F7;
+  --card-bg: rgba(255,255,255,0.08);
+  --card-border: rgba(255,255,255,0.12);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background: var(--darker);
+  color: #fff;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ========== 背景动画 ========== */
+.bg-canvas {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.bg-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(255,107,53,0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 20%, rgba(255,46,99,0.12) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 80%, rgba(255,210,63,0.08) 0%, transparent 50%);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ========== 导航 ========== */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 32px;
+  background: rgba(15,15,26,0.85);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--card-border);
+}
+
+.nav-logo {
+  font-size: 20px;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-btn {
+  padding: 8px 20px;
+  border: 1.5px solid var(--card-border);
+  border-radius: 24px;
+  background: transparent;
+  color: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.nav-btn:hover, .nav-btn.active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(255,107,53,0.1);
+}
+
+/* ========== 页面容器 ========== */
+.page {
+  display: none;
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.page.active { display: block; }
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 24px;
+}
+
+/* ========== 首页 Hero ========== */
+.hero {
+  text-align: center;
+  padding: 60px 20px 40px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  letter-spacing: 1px;
+}
+
+.hero h1 {
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #fff 0%, var(--accent) 50%, var(--primary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero h1 .emoji {
+  -webkit-text-fill-color: initial;
+}
+
+.hero p {
+  font-size: 18px;
+  color: rgba(255,255,255,0.7);
+  max-width: 600px;
+  margin: 0 auto 32px;
+  line-height: 1.6;
+}
+
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 40px;
+}
+
+.stat-item { text-align: center; }
+.stat-num {
+  font-size: 36px;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.stat-label { font-size: 13px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+.btn-primary {
+  display: inline-block;
+  padding: 16px 48px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  border: none;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  text-decoration: none;
+  box-shadow: 0 8px 32px rgba(255,107,53,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(255,107,53,0.45);
+}
+
+/* ========== 报名表单 ========== */
+.form-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  padding: 40px;
+  backdrop-filter: blur(10px);
+  margin-bottom: 30px;
+}
+
+.form-card h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.form-card .subtitle {
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.form-group { margin-bottom: 24px; }
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: rgba(255,255,255,0.8);
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 14px 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid var(--card-border);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 15px;
+  transition: border-color 0.3s;
+  font-family: inherit;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255,107,53,0.05);
+}
+
+.form-group input::placeholder, .form-group textarea::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ========== 日期选择 ========== */
+.date-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.date-cell {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  border: 1.5px solid var(--card-border);
+  background: rgba(255,255,255,0.03);
+  cursor: pointer;
+  transition: all 0.3s;
+  font-size: 14px;
+}
+
+.date-cell:hover:not(.taken):not(.selected) {
+  border-color: var(--primary);
+  background: rgba(255,107,53,0.08);
+}
+
+.date-cell.selected {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, rgba(255,107,53,0.2), rgba(255,46,99,0.2));
+  box-shadow: 0 0 20px rgba(255,107,53,0.2);
+}
+
+.date-cell.taken {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: rgba(255,255,255,0.02);
+}
+
+.date-cell .day-num {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.date-cell .day-label {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+  margin-top: 2px;
+}
+
+.date-cell.taken .day-num {
+  text-decoration: line-through;
+}
+
+.date-cell .lock-icon {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+/* ========== 按钮 ========== */
+.btn-submit {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: #fff;
+  border: none;
+  border-radius: 14px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 8px;
+}
+
+.btn-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(255,107,53,0.35);
+}
+
+.btn-submit:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-danger {
+  padding: 8px 16px;
+  background: rgba(220,53,69,0.15);
+  color: #ff6b6b;
+  border: 1px solid rgba(220,53,69,0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover {
+  background: rgba(220,53,69,0.25);
+}
+
+.btn-back {
+  display: inline-block;
+  padding: 10px 24px;
+  background: rgba(255,255,255,0.06);
+  color: #ccc;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.3s;
+  margin-bottom: 20px;
+}
+
+.btn-back:hover {
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+}
+
+/* ========== 成功页 ========== */
+.success-card {
+  text-align: center;
+  padding: 60px 40px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+}
+
+.success-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.success-card h2 {
+  font-size: 28px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.success-card .date-display {
+  font-size: 48px;
+  font-weight: 900;
+  color: var(--primary);
+  margin: 16px 0;
+}
+
+.success-card .info-text {
+  color: rgba(255,255,255,0.6);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+/* ========== 排行榜 ========== */
+.rank-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.rank-table th {
+  text-align: left;
+  padding: 12px 16px;
+  background: rgba(255,107,53,0.1);
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+}
+
+.rank-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.rank-table tr:hover td {
+  background: rgba(255,255,255,0.03);
+}
+
+.rank-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-weight: 800;
+  font-size: 13px;
+}
+
+.rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+.rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #000; }
+.rank-3 { background: linear-gradient(135deg, #CD7F32, #B87333); color: #fff; }
+.rank-other { background: rgba(255,255,255,0.08); color: #999; }
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: rgba(255,255,255,0.4);
+}
+
+.empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+
+/* ========== 后台 ========== */
+.admin-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-bar h2 { font-size: 22px; }
+
+.admin-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.admin-stat {
+  text-align: center;
+}
+
+.admin-stat .num {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+.admin-stat .label {
+  font-size: 11px;
+  color: rgba(255,255,255,0.4);
+}
+
+/* ========== 消息提示 ========== */
+.toast {
+  position: fixed;
+  top: 100px;
+  right: 24px;
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 999;
+  transform: translateX(120%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  max-width: 360px;
+}
+
+.toast.show { transform: translateX(0); }
+.toast.ok { background: rgba(40,167,69,0.9); color: #fff; }
+.toast.err { background: rgba(220,53,69,0.9); color: #fff; }
+
+/* ========== 响应式 ========== */
+@media (max-width: 640px) {
+  .hero h1 { font-size: 32px; }
+  .hero-stats { gap: 20px; }
+  .stat-num { font-size: 28px; }
+  .form-row { grid-template-columns: 1fr; }
+  .date-grid { grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .date-cell .day-num { font-size: 16px; }
+  .nav { padding: 12px 16px; }
+  .nav-logo { font-size: 16px; }
+  .container { padding: 24px 16px; }
+  .form-card { padding: 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- 背景 -->
+<canvas class="bg-canvas" id="bgCanvas"></canvas>
+<div class="bg-overlay"></div>
+
+<!-- 导航 -->
+<nav class="nav">
+  <div class="nav-logo">🏃 燃情七月</div>
+  <div class="nav-links">
+    <button class="nav-btn active" onclick="showPage('home')">首页</button>
+    <button class="nav-btn" onclick="showPage('register')">报名</button>
+    <button class="nav-btn" onclick="showPage('ranking')">排行</button>
+    <button class="nav-btn" onclick="showPage('admin')">后台</button>
+  </div>
+</nav>
+
+<!-- ========== 首页 ========== -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">2026 夏季限定</div>
+    <h1><span class="emoji">🔥</span> 燃情七月<br>半程接力 <span class="emoji">🏅</span></h1>
+    <p>每一步都是对自我的超越，每一公里都书写着坚持的故事。<br>选择你的奔跑日，加入这场青春盛会！</p>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num" id="totalDays">31</div>
+        <div class="stat-label">可选日期</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="totalRunners">0</div>
+        <div class="stat-label">已报名跑友</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="remainDays">31</div>
+        <div class="stat-label">剩余名额</div>
+      </div>
+    </div>
+    <a href="#" class="btn-primary" onclick="showPage('register'); return false;">立即报名 →</a>
+  </div>
+</div>
+
+<!-- ========== 报名页 ========== -->
+<div class="page" id="page-register">
+  <div class="container">
+    <div class="form-card" id="registerForm">
+      <h2>📝 报名参赛</h2>
+      <p class="subtitle">选择7月任意一天作为你的奔跑日</p>
+
+      <div class="form-group">
+        <label>选择日期 *</label>
+        <div class="date-grid" id="dateGrid"></div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>姓名 *</label>
+          <input type="text" id="inputName" placeholder="请输入真实姓名" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label>手机号 *</label>
+          <input type="tel" id="inputPhone" placeholder="请输入手机号" maxlength="11">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>性别</label>
+          <select id="inputGender">
+            <option value="">请选择</option>
+            <option value="男">男</option>
+            <option value="女">女</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>年龄段</label>
+          <select id="inputAge">
+            <option value="">请选择</option>
+            <option value="18-25">18-25岁</option>
+            <option value="26-35">26-35岁</option>
+            <option value="36-45">36-45岁</option>
+            <option value="46-55">46-55岁</option>
+            <option value="55+">55岁以上</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>备注</label>
+        <textarea id="inputNote" rows="2" placeholder="一句话介绍自己（选填）" maxlength="100"></textarea>
+      </div>
+
+      <button class="btn-submit" id="btnSubmit" onclick="submitRegistration()" disabled>
+        确认报名
+      </button>
+    </div>
+
+    <!-- 报名成功 -->
+    <div class="success-card" id="successCard" style="display:none;">
+      <div class="success-icon">🎉</div>
+      <h2>报名成功！</h2>
+      <div class="date-display" id="successDate"></div>
+      <p class="info-text">
+        你已成功报名 <strong id="successName"></strong><br>
+        奔跑日：<strong id="successDateText"></strong><br>
+        请按时参加活动，我们赛道上见！
+      </p>
+      <a href="#" class="btn-primary" onclick="showPage('ranking'); return false;">查看排行榜 →</a>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 排行榜 ========== -->
+<div class="page" id="page-ranking">
+  <div class="container">
+    <h2 style="font-size:24px; margin-bottom:24px;">🏆 报名排行榜</h2>
+    <div class="form-card" style="overflow-x:auto;">
+      <table class="rank-table" id="rankTable">
+        <thead>
+          <tr>
+            <th style="width:60px;">排名</th>
+            <th>姓名</th>
+            <th>性别</th>
+            <th>奔跑日</th>
+            <th>报名时间</th>
+          </tr>
+        </thead>
+        <tbody id="rankBody"></tbody>
+      </table>
+      <div class="empty-state" id="emptyRank">
+        <div class="icon">🏃</div>
+        <div>暂无报名记录</div>
+        <div style="margin-top:12px;">
+          <a href="#" class="btn-primary" onclick="showPage('register'); return false;" style="padding:12px 32px; font-size:15px;">成为第一个报名者 →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== 后台 ========== -->
+<div class="page" id="page-admin">
+  <div class="container">
+    <div id="adminLogin">
+      <div class="form-card" style="max-width:400px; margin:40px auto;">
+        <h2>🔐 管理员登录</h2>
+        <p class="subtitle">请输入管理员密码</p>
+        <div class="form-group">
+          <label>密码</label>
+          <input type="password" id="adminPass" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doAdminLogin()">
+        </div>
+        <button class="btn-submit" onclick="doAdminLogin()">登录</button>
+      </div>
+    </div>
+
+    <div id="adminPanel" style="display:none;">
+      <div class="admin-bar">
+        <h2>📊 后台管理</h2>
+        <div class="admin-stats">
+          <div class="admin-stat">
+            <div class="num" id="adminTotal">0</div>
+            <div class="label">总报名</div>
+          </div>
+          <div class="admin-stat">
+            <div class="num" id="adminDays">0</div>
+            <div class="label">已占日期</div>
+          </div>
+        </div>
+        <button class="btn-danger" onclick="doAdminLogout()">退出</button>
+      </div>
+
+      <div class="form-card" style="overflow-x:auto;">
+        <table class="rank-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>姓名</th>
+              <th>手机号</th>
+              <th>性别</th>
+              <th>年龄</th>
+              <th>奔跑日</th>
+              <th>备注</th>
+              <th>报名时间</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="adminBody"></tbody>
+        </table>
+        <div class="empty-state" id="emptyAdmin">
+          <div class="icon">📭</div>
+          <div>暂无报名数据</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ========== 数据存储 ==========
+const STORAGE_KEY = 'run_july_2026';
+const ADMIN_PASS = '013604';
+
+function getData() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  catch { return []; }
+}
+
+function setData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// ========== 页面切换 ==========
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  // 更新导航高亮
+  const btns = document.querySelectorAll('.nav-btn');
+  const names = ['home', 'register', 'ranking', 'admin'];
+  const idx = names.indexOf(name);
+  if (idx >= 0) btns[idx].classList.add('active');
+
+  if (name === 'ranking') renderRanking();
+  if (name === 'home') updateHomeStats();
+  if (name === 'admin' && sessionStorage.getItem('admin_ok') === '1') showAdminPanel();
+}
+
+// ========== Toast ==========
+function toast(msg, ok) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast ' + (ok ? 'ok' : 'err') + ' show';
+  setTimeout(() => el.className = 'toast', 3000);
+}
+
+// ========== 首页统计 ==========
+function updateHomeStats() {
+  const data = getData();
+  const taken = new Set(data.map(r => r.day));
+  document.getElementById('totalRunners').textContent = data.length;
+  document.getElementById('remainDays').textContent = 31 - taken.size;
+}
+
+// ========== 日期选择 ==========
+let selectedDay = null;
+
+function renderDateGrid() {
+  const data = getData();
+  const taken = new Set(data.map(r => r.day));
+  const grid = document.getElementById('dateGrid');
+  grid.innerHTML = '';
+
+  const days = ['日', '一', '二', '三', '四', '五', '六'];
+  const now = new Date();
+  const start = new Date(2026, 6, 1); // 7月1日
+  const dayOfWeek = start.getDay(); // 0=周日
+
+  for (let d = 1; d <= 31; d++) {
+    const cell = document.createElement('div');
+    cell.className = 'date-cell';
+    const isTaken = taken.has(d);
+    if (isTaken) {
+      cell.classList.add('taken');
+      cell.innerHTML = `<span class="day-num">${d}</span><span class="day-label">${days[(dayOfWeek + d - 1) % 7]}</span><span class="lock-icon">🔒</span>`;
+    } else {
+      cell.innerHTML = `<span class="day-num">${d}</span><span class="day-label">${days[(dayOfWeek + d - 1) % 7]}</span>`;
+      cell.onclick = () => selectDate(d);
+    }
+    grid.appendChild(cell);
+  }
+}
+
+function selectDate(d) {
+  selectedDay = d;
+  document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
+  const cells = document.querySelectorAll('.date-cell');
+  cells[d - 1].classList.add('selected');
+  checkSubmitReady();
+}
+
+function checkSubmitReady() {
+  const name = document.getElementById('inputName').value.trim();
+  const phone = document.getElementById('inputPhone').value.trim();
+  document.getElementById('btnSubmit').disabled = !(selectedDay && name && phone);
+}
+
+// 监听输入
+document.getElementById('inputName').addEventListener('input', checkSubmitReady);
+document.getElementById('inputPhone').addEventListener('input', checkSubmitReady);
+
+// ========== 报名提交 ==========
+function submitRegistration() {
+  const name = document.getElementById('inputName').value.trim();
+  const phone = document.getElementById('inputPhone').value.trim();
+  const gender = document.getElementById('inputGender').value;
+  const age = document.getElementById('inputAge').value;
+  const note = document.getElementById('inputNote').value.trim();
+
+  if (!selectedDay) { toast('请先选择日期', false); return; }
+  if (!name) { toast('请输入姓名', false); return; }
+  if (!phone || !/^1\d{10}$/.test(phone)) { toast('请输入正确的手机号', false); return; }
+
+  const data = getData();
+
+  // 检查日期是否已被选
+  if (data.some(r => r.day === selectedDay)) {
+    toast('该日期已被选择，请选择其他日期', false);
+    renderDateGrid();
+    selectedDay = null;
+    document.querySelectorAll('.date-cell').forEach(c => c.classList.remove('selected'));
+    checkSubmitReady();
+    return;
+  }
+
+  // 检查同名
+  if (data.some(r => r.name === name)) {
+    toast('该姓名已报名，请使用其他姓名', false);
+    return;
+  }
+
+  // 检查同手机号
+  if (data.some(r => r.phone === phone)) {
+    toast('该手机号已报名', false);
+    return;
+  }
+
+  const record = {
+    id: Date.now(),
+    day: selectedDay,
+    name, phone, gender, age, note,
+    time: new Date().toLocaleString('zh-CN')
+  };
+
+  data.push(record);
+  setData(data);
+
+  // 显示成功
+  document.getElementById('registerForm').style.display = 'none';
+  const sc = document.getElementById('successCard');
+  sc.style.display = 'block';
+  document.getElementById('successDate').textContent = '7月' + selectedDay + '日';
+  document.getElementById('successName').textContent = name;
+  document.getElementById('successDateText').textContent = '2026年7月' + selectedDay + '日';
+
+  toast('报名成功！', true);
+}
+
+// ========== 排行榜 ==========
+function renderRanking() {
+  const data = getData().sort((a, b) => a.day - b.day);
+  const tbody = document.getElementById('rankBody');
+  const emptyEl = document.getElementById('emptyRank');
+
+  if (data.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  tbody.innerHTML = data.map((r, i) => {
+    const rankClass = i < 3 ? 'rank-' + (i + 1) : 'rank-other';
+    return `<tr>
+      <td><span class="rank-num ${rankClass}">${i + 1}</span></td>
+      <td><strong>${r.name}</strong></td>
+      <td>${r.gender || '-'}</td>
+      <td><span style="color:var(--primary); font-weight:700;">7月${r.day}日</span></td>
+      <td style="color:rgba(255,255,255,0.4); font-size:12px;">${r.time}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ========== 管理员 ==========
+function doAdminLogin() {
+  const pass = document.getElementById('adminPass').value;
+  if (pass === ADMIN_PASS) {
+    sessionStorage.setItem('admin_ok', '1');
+    showAdminPanel();
+  } else {
+    toast('密码错误', false);
+  }
+}
+
+function doAdminLogout() {
+  sessionStorage.removeItem('admin_ok');
+  document.getElementById('adminLogin').style.display = 'block';
+  document.getElementById('adminPanel').style.display = 'none';
+}
+
+function showAdminPanel() {
+  document.getElementById('adminLogin').style.display = 'none';
+  document.getElementById('adminPanel').style.display = 'block';
+  renderAdmin();
+}
+
+function renderAdmin() {
+  const data = getData().sort((a, b) => a.day - b.day);
+  const tbody = document.getElementById('adminBody');
+  const emptyEl = document.getElementById('emptyAdmin');
+
+  document.getElementById('adminTotal').textContent = data.length;
+  document.getElementById('adminDays').textContent = new Set(data.map(r => r.day)).size;
+
+  if (data.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.style.display = 'block';
+    return;
+  }
+
+  emptyEl.style.display = 'none';
+  tbody.innerHTML = data.map(r => `<tr>
+    <td style="color:rgba(255,255,255,0.3); font-size:12px;">${r.id}</td>
+    <td><strong>${r.name}</strong></td>
+    <td style="font-size:12px;">${r.phone}</td>
+    <td>${r.gender || '-'}</td>
+    <td>${r.age || '-'}</td>
+    <td><span style="color:var(--primary); font-weight:700;">7月${r.day}日</span></td>
+    <td>${r.note || '-'}</td>
+    <td style="font-size:11px; color:rgba(255,255,255,0.4);">${r.time}</td>
+    <td><button class="btn-danger" onclick="deleteRecord(${r.id})">删除</button></td>
+  </tr>`).join('');
+}
+
+function deleteRecord(id) {
+  if (!confirm('确定删除该记录？')) return;
+  let data = getData();
+  data = data.filter(r => r.id !== id);
+  setData(data);
+  renderAdmin();
+  toast('已删除', true);
+}
+
+// ========== 背景动画 ==========
+function initBgCanvas() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let w, h;
+  const particles = [];
+  const PARTICLE_COUNT = 50;
+
+  function resize() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * w;
+      this.y = Math.random() * h;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = (Math.random() - 0.5) * 0.5;
+      this.opacity = Math.random() * 0.5 + 0.1;
+      this.color = ['#FF6B35', '#FF2E63', '#FFD23F'][Math.floor(Math.random() * 3)];
+    }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.globalAlpha = this.opacity;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function init() {
+    resize();
+    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(p => { p.update(); p.draw(); });
+
+    // 连线
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(255,107,53,' + (0.08 * (1 - dist / 120)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', resize);
+  init();
+  animate();
+}
+
+// ========== 初始化 ==========
+window.addEventListener('DOMContentLoaded', () => {
+  initBgCanvas();
+  renderDateGrid();
+  updateHomeStats();
+});
+</script>
+</body>
+</html>
