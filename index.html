@@ -116,16 +116,46 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 <script>
 const ADMIN_PASS='013604';
 const STORAGE_KEY='run_july_2026_data';
+const REPO='tianjiao285/run-registration';
+const ISSUES_API='https://api.github.com/repos/'+REPO+'/issues';
 
-function getData(){
+async function getData(){
   try{
-    var d=localStorage.getItem(STORAGE_KEY);
-    return d?JSON.parse(d):[];
-  }catch(e){return[];}
+    var r=await fetch(ISSUES_API+'?state=open&per_page=100');
+    var issues=await r.json();
+    var data=[];
+    for(var i=0;i<issues.length;i++){
+      var body=issues[i].body||'';
+      try{var item=JSON.parse(body);item.issueNumber=issues[i].number;data.push(item);}catch(e){}
+    }
+    return data;
+  }catch(e){console.error('getData error:',e);return[];}
 }
 
-function setData(data){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+async function addIssue(item){
+  try{
+    var token=sessionStorage.getItem('gh_token');
+    if(!token){token=prompt('请输入GitHub Token：');if(!token)throw new Error('需要Token');sessionStorage.setItem('gh_token',token);}
+    var body=JSON.stringify(item);
+    var title='报名: '+item.name+' (7月'+item.day+'日)';
+    var r=await fetch(ISSUES_API,{
+      method:'POST',
+      headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},
+      body:JSON.stringify({title:title,body:body,labels:['registration']})
+    });
+    if(!r.ok)throw new Error((await r.json()).message||'提交失败');
+    return await r.json();
+  }catch(e){console.error('addIssue error:',e);throw e;}
+}
+
+async function deleteIssue(number){
+  try{
+    var token=sessionStorage.getItem('gh_token');
+    if(!token){token=prompt('请输入GitHub Token：');if(!token)throw new Error('需要Token');sessionStorage.setItem('gh_token',token);}
+    var r=await fetch(ISSUES_API+'/'+number,{method:'PATCH',headers:{'Authorization':'token '+token,'Accept':'application/vnd.github.v3+json','Content-Type':'application/json'},body:JSON.stringify({state:'closed'})});
+    if(!r.ok)throw new Error((await r.json()).message||'删除失败');
+    return await r.json();
+  }catch(e){console.error('deleteIssue error:',e);throw e;}
 }
 
 function showPage(n){
@@ -148,35 +178,11 @@ function toast(m,o){
   setTimeout(function(){e.className='to'},3000);
 }
 
-function updateHomeStats(){
-  var d=getData();
-  var t=new Set(d.map(function(r){return r.day}));
-  document.getElementById('totalRunners').textContent=d.length;
-  document.getElementById('remainDays').textContent=31-t.size;
-}
+async function updateHomeStats(){var d=await getData();var t=new Set(d.map(function(r){return r.day}));document.getElementById('totalRunners').textContent=d.length;document.getElementById('remainDays').textContent=31-t.size;}
 
 var selectedDay=null;
 
-function renderDateGrid(){
-  var d=getData();
-  var t=new Set(d.map(function(r){return r.day}));
-  var g=document.getElementById('dateGrid');
-  g.innerHTML='';
-  var w=['日','一','二','三','四','五','六'];
-  var s=new Date(2026,6,1).getDay();
-  for(var i=1;i<=31;i++){
-    var c=document.createElement('div');
-    c.className='dc';
-    if(t.has(i)){
-      c.classList.add('tk');
-      c.innerHTML='<span class="dn">'+i+'</span><span class="dl">'+w[(s+i-1)%7]+'</span>';
-    }else{
-      c.innerHTML='<span class="dn">'+i+'</span><span class="dl">'+w[(s+i-1)%7]+'</span>';
-      (function(x){c.onclick=function(){selectDate(x)}})(i);
-    }
-    g.appendChild(c);
-  }
-}
+async function renderDateGrid(){var d=await getData();var t=new Set(d.map(function(r){return r.day}));var g=document.getElementById('dateGrid');g.innerHTML='';var w=['日','一','二','三','四','五','六'];var s=new Date(2026,6,1).getDay();for(var i=1;i<=31;i++){var c=document.createElement('div');c.className='dc';if(t.has(i)){c.classList.add('tk');c.innerHTML='<span class="dn">'+i+'</span><span class="dl">'+w[(s+i-1)%7]+'</span>';}else{c.innerHTML='<span class="dn">'+i+'</span><span class="dl">'+w[(s+i-1)%7]+'</span>';(function(x){c.onclick=function(){selectDate(x)}})(i);}g.appendChild(c);}}
 
 function selectDate(d){
   selectedDay=d;
@@ -194,47 +200,9 @@ function checkReady(){
 document.getElementById('inputName').addEventListener('input',checkReady);
 document.getElementById('inputPhone').addEventListener('input',checkReady);
 
-function submitRegistration(){
-  var n=document.getElementById('inputName').value.trim();
-  var p=document.getElementById('inputPhone').value.trim();
-  var gv=document.getElementById('inputGender').value;
-  var a=document.getElementById('inputAge').value;
-  var nt=document.getElementById('inputNote').value.trim();
-  if(!selectedDay){toast('请先选择日期',false);return;}
-  if(!n){toast('请输入姓名',false);return;}
-  if(!p||!/^1\d{10}$/.test(p)){toast('请输入正确的手机号',false);return;}
-  var d=getData();
-  if(d.some(function(r){return r.day===selectedDay})){
-    toast('该日期已被选择',false);
-    selectedDay=null;
-    document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});
-    checkReady();
-    return;
-  }
-  if(d.some(function(r){return r.name===n})){toast('该姓名已报名',false);return;}
-  if(d.some(function(r){return r.phone===p})){toast('该手机号已报名',false);return;}
-  var rc={id:Date.now(),day:selectedDay,name:n,phone:p,gender:gv,age:a,note:nt,time:new Date().toLocaleString('zh-CN')};
-  d.push(rc);
-  setData(d);
-  document.getElementById('registerForm').style.display='none';
-  document.getElementById('successCard').style.display='block';
-  document.getElementById('successDate').textContent='7月'+selectedDay+'日';
-  document.getElementById('successName').textContent=n;
-  document.getElementById('successDateText').textContent='2026年7月'+selectedDay+'日';
-  toast('报名成功！',true);
-}
+async function submitRegistration(){var n=document.getElementById('inputName').value.trim(),p=document.getElementById('inputPhone').value.trim(),gv=document.getElementById('inputGender').value,a=document.getElementById('inputAge').value,nt=document.getElementById('inputNote').value.trim();if(!selectedDay){toast('请先选择日期',false);return;}if(!n){toast('请输入姓名',false);return;}if(!p||!/^1\d{10}$/.test(p)){toast('请输入正确的手机号',false);return;}var d=await getData();if(d.some(function(r){return r.day===selectedDay})){toast('该日期已被选择',false);selectedDay=null;document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});checkReady();return;}if(d.some(function(r){return r.name===n})){toast('该姓名已报名',false);return;}if(d.some(function(r){return r.phone===p})){toast('该手机号已报名',false);return;}var rc={id:Date.now(),day:selectedDay,name:n,phone:p,gender:gv,age:a,note:nt,time:new Date().toLocaleString('zh-CN')};await addIssue(rc);document.getElementById('registerForm').style.display='none';document.getElementById('successCard').style.display='block';document.getElementById('successDate').textContent='7月'+selectedDay+'日';document.getElementById('successName').textContent=n;document.getElementById('successDateText').textContent='2026年7月'+selectedDay+'日';toast('报名成功！',true);}
 
-function renderRanking(){
-  var d=getData().sort(function(a,b){return a.day-b.day});
-  var b=document.getElementById('rankBody');
-  var e=document.getElementById('emptyRank');
-  if(!d.length){b.innerHTML='';e.style.display='block';return;}
-  e.style.display='none';
-  b.innerHTML=d.map(function(r,i){
-    var c=i<3?'r'+(i+1):'ro';
-    return'<tr><td><span class="rn '+c+'">'+(i+1)+'</span></td><td><strong>'+r.name+'</strong></td><td>'+(r.gender||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td style="color:rgba(255,255,255,0.4);font-size:12px">'+r.time+'</td></tr>';
-  }).join('');
-}
+async function renderRanking(){var d=(await getData()).sort(function(a,b){return a.day-b.day});var b=document.getElementById('rankBody');var e=document.getElementById('emptyRank');if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r,i){var c=i<3?'r'+(i+1):'ro';return'<tr><td><span class="rn '+c+'">'+(i+1)+'</span></td><td><strong>'+r.name+'</strong></td><td>'+(r.gender||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td style="color:rgba(255,255,255,0.4);font-size:12px">'+r.time+'</td></tr>';}).join('');}
 
 function doAdminLogin(){
   if(document.getElementById('adminPass').value===ADMIN_PASS){
@@ -249,33 +217,11 @@ function doAdminLogout(){
   document.getElementById('adminPanel').style.display='none';
 }
 
-function showAdminPanel(){
-  document.getElementById('adminLogin').style.display='none';
-  document.getElementById('adminPanel').style.display='block';
-  renderAdmin();
-}
+async function showAdminPanel(){document.getElementById('adminLogin').style.display='none';document.getElementById('adminPanel').style.display='block';await renderAdmin();}
 
-function renderAdmin(){
-  var d=getData().sort(function(a,b){return a.day-b.day});
-  var b=document.getElementById('adminBody');
-  var e=document.getElementById('emptyAdmin');
-  document.getElementById('adminTotal').textContent=d.length;
-  document.getElementById('adminDays').textContent=new Set(d.map(function(r){return r.day})).size;
-  if(!d.length){b.innerHTML='';e.style.display='block';return;}
-  e.style.display='none';
-  b.innerHTML=d.map(function(r){
-    return'<tr><td style="font-size:12px;color:rgba(255,255,255,0.3)">'+r.id+'</td><td><strong>'+r.name+'</strong></td><td style="font-size:12px">'+r.phone+'</td><td>'+(r.gender||'-')+'</td><td>'+(r.age||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td>'+(r.note||'-')+'</td><td style="font-size:11px;color:rgba(255,255,255,0.4)">'+r.time+'</td><td><button class="bd" onclick="deleteRecord('+r.id+')">删除</button></td></tr>';
-  }).join('');
-}
+async function renderAdmin(){var d=(await getData()).sort(function(a,b){return a.day-b.day});var b=document.getElementById('adminBody');var e=document.getElementById('emptyAdmin');document.getElementById('adminTotal').textContent=d.length;document.getElementById('adminDays').textContent=new Set(d.map(function(r){return r.day})).size;if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r){return'<tr><td style="font-size:12px;color:rgba(255,255,255,0.3)">'+r.id+'</td><td><strong>'+r.name+'</strong></td><td style="font-size:12px">'+r.phone+'</td><td>'+(r.gender||'-')+'</td><td>'+(r.age||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td>'+(r.note||'-')+'</td><td style="font-size:11px;color:rgba(255,255,255,0.4)">'+r.time+'</td><td><button class="bd" onclick="deleteRecord('+r.id+')">删除</button></td></tr>';}).join('');}
 
-function deleteRecord(id){
-  if(!confirm('确定删除？'))return;
-  var d=getData();
-  d=d.filter(function(r){return r.id!==id});
-  setData(d);
-  renderAdmin();
-  toast('已删除',true);
-}
+async function deleteRecord(id){if(!confirm('确定删除？'))return;var d=await getData();var target=d.find(function(r){return r.id===id});if(target){await deleteIssue(target.issueNumber);}d=d.filter(function(r){return r.id!==id});await renderAdmin();toast('已删除',true);}
 
 window.addEventListener('DOMContentLoaded',function(){renderDateGrid();updateHomeStats();});
 window.addEventListener('unhandledrejection',function(e){console.error(e.reason);toast('操作失败: '+(e.reason&&e.reason.message||'未知错误'),false);});
