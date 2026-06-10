@@ -158,7 +158,7 @@ async function deleteIssue(number){
   }catch(e){console.error('deleteIssue error:',e);throw e;}
 }
 
-function showPage(n){
+async function showPage(n){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active')});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active')});
   document.getElementById('page-'+n).classList.add('active');
@@ -166,9 +166,9 @@ function showPage(n){
   var names=['home','register','ranking','admin'];
   var idx=names.indexOf(n);
   if(idx>=0)btns[idx].classList.add('active');
-  if(n==='ranking')renderRanking();
-  if(n==='home')updateHomeStats();
-  if(n==='admin'&&sessionStorage.getItem('admin_ok')==='1')showAdminPanel();
+  if(n==='ranking')await renderRanking();
+  if(n==='home')await updateHomeStats();
+  if(n==='admin'&&sessionStorage.getItem('admin_ok')==='1')await showAdminPanel();
 }
 
 function toast(m,o){
@@ -204,10 +204,10 @@ async function submitRegistration(){var n=document.getElementById('inputName').v
 
 async function renderRanking(){var d=(await getData()).sort(function(a,b){return a.day-b.day});var b=document.getElementById('rankBody');var e=document.getElementById('emptyRank');if(!d.length){b.innerHTML='';e.style.display='block';return;}e.style.display='none';b.innerHTML=d.map(function(r,i){var c=i<3?'r'+(i+1):'ro';return'<tr><td><span class="rn '+c+'">'+(i+1)+'</span></td><td><strong>'+r.name+'</strong></td><td>'+(r.gender||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td style="color:rgba(255,255,255,0.4);font-size:12px">'+r.time+'</td></tr>';}).join('');}
 
-function doAdminLogin(){
+async function doAdminLogin(){
   if(document.getElementById('adminPass').value===ADMIN_PASS){
     sessionStorage.setItem('admin_ok','1');
-    showAdminPanel();
+    await showAdminPanel();
   }else toast('密码错误',false);
 }
 
