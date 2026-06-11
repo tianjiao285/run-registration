@@ -102,14 +102,35 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 <h2 style="font-size:24px;margin-bottom:24px">🏆 报名排行榜</h2>
 <div class="fc" style="overflow-x:auto"><table class="rt"><thead><tr><th style="width:60px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead><tbody id="rankBody"></tbody></table>
 <div class="es" id="emptyRank"><div class="ic">🏃</div><div>暂无报名记录</div></div></div></div>
-<div class="pg" id="page-admin"><div class="ct">
-<div id="adminLogin"><div class="fc" style="max-width:400px;margin:40px auto"><h2>🔐 管理员登录</h2>
+<div class="pg" id="page-admin">
+<div class="ct">
+<div id="adminLogin">
+<div class="fc" style="max-width:400px;margin:40px auto">
+<h2>🔐 管理员登录</h2>
 <div class="fg"><label>密码</label><input type="password" id="adminPass" placeholder="请输入密码"></div>
-<button class="bs" onclick="doAdminLogin()">登录</button></div></div>
+<button class="bs" onclick="doAdminLogin()">登录</button>
+</div>
+</div>
 <div id="adminPanel" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px"><h2>📊 后台管理</h2><div style="display:flex;gap:16px;font-size:14px"><span>总报名: <strong id="adminTotal">0</strong></span><span>已占日期: <strong id="adminDays">0</strong></span></div><button class="bd" onclick="doAdminLogout()">退出</button></div>
-<div class="fc" style="overflow-x:auto"><table class="rt"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table>
-<div class="es" id="emptyAdmin"><div class="ic">📭</div><div>暂无数据</div></div></div></div></div>
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+<h2>📊 后台管理</h2>
+<div style="display:flex;gap:16px;font-size:14px">
+<span>总报名: <strong id="adminTotal">0</strong></span>
+<span>已占日期: <strong id="adminDays">0</strong></span>
+</div>
+<button class="bd" onclick="doAdminLogout()">退出</button>
+</div>
+<div class="fc" style="overflow-x:auto">
+<table class="rt"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead>
+<tbody id="adminBody"></tbody></table>
+</div>
+<div class="es" id="emptyAdmin" style="display:none">
+<div class="ic">📭</div>
+<div>暂无数据</div>
+</div>
+</div>
+</div>
+</div>
 <div class="to" id="toast"></div>
 <script>
 const ADMIN_PASS='013604';
@@ -136,7 +157,7 @@ function showPage(n){
   if(idx>=0)btns[idx].classList.add('active');
   if(n==='ranking')renderRanking();
   if(n==='home')updateHomeStats();
-  if(n==='admin'&&sessionStorage.getItem('admin_ok')==='1')showAdminPanel();
+  if(n==='admin'){if(sessionStorage.getItem('admin_ok')==='1'){showAdminPanel();}else{document.getElementById('adminLogin').style.display='block';document.getElementById('adminPanel').style.display='none';}}
 }
 
 function toast(m,o){
@@ -235,7 +256,9 @@ function renderRanking(){
 }
 
 function doAdminLogin(){
-  if(document.getElementById('adminPass').value===ADMIN_PASS){
+  var pw=document.getElementById('adminPass');
+  if(!pw){toast('页面加载错误',false);return;}
+  if(pw.value===ADMIN_PASS){
     sessionStorage.setItem('admin_ok','1');
     showAdminPanel();
   }else toast('密码错误',false);
@@ -257,8 +280,8 @@ function renderAdmin(){
   var d=getData().sort(function(a,b){return a.day-b.day});
   var b=document.getElementById('adminBody');
   var e=document.getElementById('emptyAdmin');
-  document.getElementById('adminTotal').textContent=d.length;
-  document.getElementById('adminDays').textContent=new Set(d.map(function(r){return r.day})).size;
+  document.getElementById('adminTotal').textContent=String(d.length);
+  document.getElementById('adminDays').textContent=String(new Set(d.map(function(r){return r.day})).size);
   if(!d.length){b.innerHTML='';e.style.display='block';return;}
   e.style.display='none';
   b.innerHTML=d.map(function(r){
