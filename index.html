@@ -450,7 +450,7 @@ window.addEventListener('DOMContentLoaded',function(){
   renderDateGrid();
   updateHomeStats();
   getData().then(function(){updateAllViews();});
-  setInterval(refreshData,15000);
+  setInterval(refreshData,2000);
 });
 
 window.addEventListener('unhandledrejection',function(e){console.error(e.reason);toast('操作失败: '+(e.reason&&e.reason.message||'未知错误'),false);});
