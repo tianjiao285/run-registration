@@ -64,6 +64,8 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 .to.show{transform:translateX(0)}
 .to.ok{background:rgba(40,167,69,0.9);color:#fff}
 .to.er{background:rgba(220,53,69,0.9);color:#fff}
+.loading{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:var(--p);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:8px}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 /* Admin Modal */
 .modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:200;justify-content:center;align-items:center;backdrop-filter:blur(4px)}
@@ -129,17 +131,15 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 <div class="fc" style="overflow-x:auto"><table class="rt"><thead><tr><th style="width:60px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead><tbody id="rankBody"></tbody></table>
 <div class="es" id="emptyRank"><div class="ic">🏃</div><div>暂无报名记录</div></div></div></div>
 
-<!-- Admin Login Modal -->
+<!-- Admin Modal -->
 <div class="modal-overlay" id="adminModal">
 <div class="modal">
 <button class="modal-close" onclick="closeAdmin()">×</button>
-<!-- Login Form -->
 <div id="adminLogin">
 <h2>🔐 管理员登录</h2>
 <div class="fg"><label>密码</label><input type="password" id="adminPass" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
 <button class="btn-login" onclick="doAdminLogin()">登录</button>
 </div>
-<!-- Admin Panel (hidden until login) -->
 <div id="adminPanel" style="display:none">
 <div class="admin-header">
 <h2>📊 后台管理</h2>
@@ -162,14 +162,56 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 <div class="footer"><a href="#" onclick="openAdmin();return false">管理员入口</a></div>
 <script>
 const ADMIN_PASS='013604';
-const STORAGE_KEY='run_july_2026_data';
+const REPO='tianjiao285/run-registration';
+const DATA_URL='https://api.github.com/repos/'+REPO+'/contents/data.json';
+const RAW_URL='https://raw.githubusercontent.com/'+REPO+'/main/data.json';
 
-function getData(){
-  try{var d=localStorage.getItem(STORAGE_KEY);return d?JSON.parse(d):[];}
-  catch(e){return[];}
+// ========== GitHub Data Layer ==========
+async function getData(){
+  try{
+    var resp=await fetch(RAW_URL+'?t='+Date.now());
+    if(!resp.ok)return[];
+    return await resp.json();
+  }catch(e){
+    console.error('获取数据失败:',e);
+    return[];
+  }
 }
-function setData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
 
+async function setData(data){
+  try{
+    var sha=null;
+    try{
+      var r=await fetch(DATA_URL,{headers:{'Accept':'application/vnd.github.v3+json'}});
+      if(r.ok)sha=(await r.json()).sha;
+    }catch(e){console.error('获取sha失败:',e);}
+    var body={
+      message:'Update registration data',
+      content:btoa(unescape(encodeURIComponent(JSON.stringify(data,null,2)))),
+      sha:sha
+    };
+    var resp=await fetch(DATA_URL,{
+      method:'PUT',
+      headers:{
+        'Authorization':'token '+GH_TOKEN,
+        'Accept':'application/vnd.github.v3+json',
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify(body)
+    });
+    if(!resp.ok){
+      var err=await resp.json();
+      throw new Error(err.message||'保存失败');
+    }
+    return await resp.json();
+  }catch(e){
+    console.error('保存数据失败:',e);
+    toast('保存失败: '+(e.message||'网络错误'),false);
+    throw e;
+  }
+}
+
+// ========== UI ==========
 function showPage(n){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active')});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active')});
@@ -198,8 +240,8 @@ function toast(m,o){
   setTimeout(function(){e.className='to'},3000);
 }
 
-function updateHomeStats(){
-  var d=getData();
+async function updateHomeStats(){
+  var d=await getData();
   var t=new Set(d.map(function(r){return r.day}));
   document.getElementById('totalRunners').textContent=String(d.length);
   document.getElementById('remainDays').textContent=String(31-t.size);
@@ -207,8 +249,8 @@ function updateHomeStats(){
 
 var selectedDay=null;
 
-function renderDateGrid(){
-  var d=getData();
+async function renderDateGrid(){
+  var d=await getData();
   var t=new Set(d.map(function(r){return r.day}));
   var g=document.getElementById('dateGrid');
   g.innerHTML='';
@@ -244,7 +286,7 @@ function checkReady(){
 document.getElementById('inputName').addEventListener('input',checkReady);
 document.getElementById('inputPhone').addEventListener('input',checkReady);
 
-function submitRegistration(){
+async function submitRegistration(){
   var n=document.getElementById('inputName').value.trim();
   var p=document.getElementById('inputPhone').value.trim();
   var gv=document.getElementById('inputGender').value;
@@ -253,16 +295,18 @@ function submitRegistration(){
   if(!selectedDay){toast('请先选择日期',false);return;}
   if(!n){toast('请输入姓名',false);return;}
   if(!p||!/^1\d{10}$/.test(p)){toast('请输入正确的手机号',false);return;}
-  var d=getData();
+  var d=await getData();
   if(d.some(function(r){return r.day===selectedDay})){
     toast('该日期已被选择',false);
-    selectedDay=null;document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});
+    selectedDay=null;
+    document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});
     checkReady();return;
   }
   if(d.some(function(r){return r.name===n})){toast('该姓名已报名',false);return;}
   if(d.some(function(r){return r.phone===p})){toast('该手机号已报名',false);return;}
   var rc={id:Date.now(),day:selectedDay,name:n,phone:p,gender:gv,age:a,note:nt,time:new Date().toLocaleString('zh-CN')};
-  d.push(rc);setData(d);
+  d.push(rc);
+  await setData(d);
   document.getElementById('registerForm').style.display='none';
   document.getElementById('successCard').style.display='block';
   document.getElementById('successDate').textContent='7月'+selectedDay+'日';
@@ -271,8 +315,8 @@ function submitRegistration(){
   toast('报名成功！',true);
 }
 
-function renderRanking(){
-  var d=getData().sort(function(a,b){return a.day-b.day});
+async function renderRanking(){
+  var d=(await getData()).sort(function(a,b){return a.day-b.day});
   var b=document.getElementById('rankBody');
   var e=document.getElementById('emptyRank');
   if(!d.length){b.innerHTML='';e.style.display='block';return;}
@@ -304,8 +348,8 @@ function showAdminPanel(){
   renderAdmin();
 }
 
-function renderAdmin(){
-  var d=getData().sort(function(a,b){return a.day-b.day});
+async function renderAdmin(){
+  var d=(await getData()).sort(function(a,b){return a.day-b.day});
   var b=document.getElementById('adminBody');
   var e=document.getElementById('emptyAdmin');
   document.getElementById('adminTotal').textContent=String(d.length);
@@ -317,12 +361,12 @@ function renderAdmin(){
   }).join('');
 }
 
-function deleteRecord(id){
-  if(!confirm('确定删除？'))return;
-  var d=getData();
+async function deleteRecord(id){
+  if(!confirm('确定删除该记录？'))return;
+  var d=await getData();
   d=d.filter(function(r){return r.id!==id});
-  setData(d);
-  renderAdmin();
+  await setData(d);
+  await renderAdmin();
   toast('已删除',true);
 }
 
