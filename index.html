@@ -11,7 +11,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Microsoft YaHei,sans-
 canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
 .ov{position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse at 20% 50%,rgba(255,107,53,0.15),transparent 50%),radial-gradient(ellipse at 80% 20%,rgba(255,46,99,0.12),transparent 50%);z-index:0;pointer-events:none}
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:16px 32px;background:rgba(15,15,26,0.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--cl)}
-.nl{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.nl{font-size:20px;font-weight:800;background:linear-gradient(135deg,var(--p),var(--s));-webkit-background-clip:text;-webkit-text-fill-color:transparent;cursor:pointer}
 .nls{display:flex;gap:8px}
 .nb{padding:8px 20px;border:1.5px solid var(--cl);border-radius:24px;background:transparent;color:#ccc;font-size:14px;cursor:pointer;transition:.3s}
 .nb:hover,.nb.active{border-color:var(--p);color:var(--p);background:rgba(255,107,53,0.1)}
@@ -64,17 +64,43 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 .to.show{transform:translateX(0)}
 .to.ok{background:rgba(40,167,69,0.9);color:#fff}
 .to.er{background:rgba(220,53,69,0.9);color:#fff}
-@media(max-width:640px){.hr h1{font-size:32px}.fr{grid-template-columns:1fr}.nav{padding:12px 16px}.ct{padding:24px 16px}.fc{padding:24px}}
+
+/* Admin Modal */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:200;justify-content:center;align-items:center;backdrop-filter:blur(4px)}
+.modal-overlay.show{display:flex}
+.modal{background:var(--d);border:1px solid var(--cl);border-radius:20px;padding:40px;width:90%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative}
+.modal-close{position:absolute;top:16px;right:16px;background:none;border:none;color:rgba(255,255,255,0.5);font-size:24px;cursor:pointer;transition:color .3s}
+.modal-close:hover{color:#fff}
+.modal h2{font-size:22px;margin-bottom:24px}
+.modal .fg{margin-bottom:20px}
+.modal .fg input{width:100%;padding:14px 18px;background:rgba(255,255,255,0.06);border:1.5px solid var(--cl);border-radius:12px;color:#fff;font-size:15px;font-family:inherit;transition:border-color .3s}
+.modal .fg input:focus{outline:none;border-color:var(--p)}
+.modal .btn-login{width:100%;padding:14px;background:linear-gradient(135deg,var(--p),var(--s));color:#fff;border:none;border-radius:14px;font-size:16px;font-weight:700;cursor:pointer;transition:.3s}
+.modal .btn-login:hover{opacity:.9}
+.modal .admin-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.modal .admin-header h2{margin-bottom:0}
+.modal .stats{display:flex;gap:16px;font-size:14px;color:rgba(255,255,255,0.6);margin-bottom:20px}
+.modal .stats strong{color:var(--p)}
+.modal .table-wrap{overflow-x:auto;margin-bottom:20px}
+.modal .btn-danger{padding:8px 16px;background:rgba(220,53,69,0.15);color:#ff6b6b;border:1px solid rgba(220,53,69,0.3);border-radius:8px;font-size:13px;cursor:pointer;transition:all .2s}
+.modal .btn-danger:hover{background:rgba(220,53,69,0.25)}
+.modal .empty-msg{text-align:center;padding:40px 20px;color:rgba(255,255,255,0.4)}
+.modal .empty-msg .icon{font-size:40px;margin-bottom:12px}
+
+.footer{text-align:center;padding:20px;color:rgba(255,255,255,0.2);font-size:12px}
+.footer a{color:rgba(255,255,255,0.2);text-decoration:none;transition:color .3s}
+.footer a:hover{color:rgba(255,255,255,0.5)}
+
+@media(max-width:640px){.hr h1{font-size:32px}.fr{grid-template-columns:1fr}.nav{padding:12px 16px}.ct{padding:24px 16px}.fc{padding:24px}.modal{padding:24px;width:95%}}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
 <div class="ov"></div>
-<nav class="nav"><div class="nl">🏃 燃情七月</div><div class="nls">
+<nav class="nav"><div class="nl" onclick="openAdmin()">🏃 燃情七月</div><div class="nls">
 <button class="nb active" onclick="showPage('home')">首页</button>
 <button class="nb" onclick="showPage('register')">报名</button>
 <button class="nb" onclick="showPage('ranking')">排行</button>
-<button class="nb" onclick="showPage('admin')">后台</button>
 </div></nav>
 <div class="pg active" id="page-home"><div class="hr">
 <div class="hb">2026 夏季限定</div>
@@ -102,62 +128,67 @@ canvas#bg{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-e
 <h2 style="font-size:24px;margin-bottom:24px">🏆 报名排行榜</h2>
 <div class="fc" style="overflow-x:auto"><table class="rt"><thead><tr><th style="width:60px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead><tbody id="rankBody"></tbody></table>
 <div class="es" id="emptyRank"><div class="ic">🏃</div><div>暂无报名记录</div></div></div></div>
-<div class="pg" id="page-admin">
-<div class="ct">
+
+<!-- Admin Login Modal -->
+<div class="modal-overlay" id="adminModal">
+<div class="modal">
+<button class="modal-close" onclick="closeAdmin()">×</button>
+<!-- Login Form -->
 <div id="adminLogin">
-<div class="fc" style="max-width:400px;margin:40px auto">
 <h2>🔐 管理员登录</h2>
-<div class="fg"><label>密码</label><input type="password" id="adminPass" placeholder="请输入密码"></div>
-<button class="bs" onclick="doAdminLogin()">登录</button>
+<div class="fg"><label>密码</label><input type="password" id="adminPass" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doAdminLogin()"></div>
+<button class="btn-login" onclick="doAdminLogin()">登录</button>
 </div>
-</div>
+<!-- Admin Panel (hidden until login) -->
 <div id="adminPanel" style="display:none">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+<div class="admin-header">
 <h2>📊 后台管理</h2>
-<div style="display:flex;gap:16px;font-size:14px">
+<button class="btn-danger" onclick="doAdminLogout()">退出</button>
+</div>
+<div class="stats">
 <span>总报名: <strong id="adminTotal">0</strong></span>
 <span>已占日期: <strong id="adminDays">0</strong></span>
 </div>
-<button class="bd" onclick="doAdminLogout()">退出</button>
-</div>
-<div class="fc" style="overflow-x:auto">
+<div class="table-wrap">
 <table class="rt"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead>
 <tbody id="adminBody"></tbody></table>
 </div>
-<div class="es" id="emptyAdmin" style="display:none">
-<div class="ic">📭</div>
-<div>暂无数据</div>
+<div class="empty-msg" id="emptyAdmin" style="display:none"><div class="icon">📭</div><div>暂无报名数据</div></div>
 </div>
 </div>
 </div>
-</div>
+
 <div class="to" id="toast"></div>
+<div class="footer"><a href="#" onclick="openAdmin();return false">管理员入口</a></div>
 <script>
 const ADMIN_PASS='013604';
 const STORAGE_KEY='run_july_2026_data';
 
 function getData(){
-  try{
-    var d=localStorage.getItem(STORAGE_KEY);
-    return d?JSON.parse(d):[];
-  }catch(e){return[];}
+  try{var d=localStorage.getItem(STORAGE_KEY);return d?JSON.parse(d):[];}
+  catch(e){return[];}
 }
-
-function setData(data){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
-}
+function setData(data){localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}
 
 function showPage(n){
   document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('active')});
   document.querySelectorAll('.nb').forEach(function(b){b.classList.remove('active')});
   document.getElementById('page-'+n).classList.add('active');
   var btns=document.querySelectorAll('.nb');
-  var names=['home','register','ranking','admin'];
+  var names=['home','register','ranking'];
   var idx=names.indexOf(n);
   if(idx>=0)btns[idx].classList.add('active');
   if(n==='ranking')renderRanking();
   if(n==='home')updateHomeStats();
-  if(n==='admin'){if(sessionStorage.getItem('admin_ok')==='1'){showAdminPanel();}else{document.getElementById('adminLogin').style.display='block';document.getElementById('adminPanel').style.display='none';}}
+}
+
+function openAdmin(){
+  document.getElementById('adminModal').classList.add('show');
+  document.getElementById('adminPass').value='';
+  document.getElementById('adminPass').focus();
+}
+function closeAdmin(){
+  document.getElementById('adminModal').classList.remove('show');
 }
 
 function toast(m,o){
@@ -170,8 +201,8 @@ function toast(m,o){
 function updateHomeStats(){
   var d=getData();
   var t=new Set(d.map(function(r){return r.day}));
-  document.getElementById('totalRunners').textContent=d.length;
-  document.getElementById('remainDays').textContent=31-t.size;
+  document.getElementById('totalRunners').textContent=String(d.length);
+  document.getElementById('remainDays').textContent=String(31-t.size);
 }
 
 var selectedDay=null;
@@ -225,16 +256,13 @@ function submitRegistration(){
   var d=getData();
   if(d.some(function(r){return r.day===selectedDay})){
     toast('该日期已被选择',false);
-    selectedDay=null;
-    document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});
-    checkReady();
-    return;
+    selectedDay=null;document.querySelectorAll('.dc').forEach(function(c){c.classList.remove('sl')});
+    checkReady();return;
   }
   if(d.some(function(r){return r.name===n})){toast('该姓名已报名',false);return;}
   if(d.some(function(r){return r.phone===p})){toast('该手机号已报名',false);return;}
   var rc={id:Date.now(),day:selectedDay,name:n,phone:p,gender:gv,age:a,note:nt,time:new Date().toLocaleString('zh-CN')};
-  d.push(rc);
-  setData(d);
+  d.push(rc);setData(d);
   document.getElementById('registerForm').style.display='none';
   document.getElementById('successCard').style.display='block';
   document.getElementById('successDate').textContent='7月'+selectedDay+'日';
@@ -285,7 +313,7 @@ function renderAdmin(){
   if(!d.length){b.innerHTML='';e.style.display='block';return;}
   e.style.display='none';
   b.innerHTML=d.map(function(r){
-    return'<tr><td style="font-size:12px;color:rgba(255,255,255,0.3)">'+r.id+'</td><td><strong>'+r.name+'</strong></td><td style="font-size:12px">'+r.phone+'</td><td>'+(r.gender||'-')+'</td><td>'+(r.age||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td>'+(r.note||'-')+'</td><td style="font-size:11px;color:rgba(255,255,255,0.4)">'+r.time+'</td><td><button class="bd" onclick="deleteRecord('+r.id+')">删除</button></td></tr>';
+    return'<tr><td style="font-size:12px;color:rgba(255,255,255,0.3)">'+r.id+'</td><td><strong>'+r.name+'</strong></td><td style="font-size:12px">'+r.phone+'</td><td>'+(r.gender||'-')+'</td><td>'+(r.age||'-')+'</td><td><span style="color:var(--p);font-weight:700">7月'+r.day+'日</span></td><td>'+(r.note||'-')+'</td><td style="font-size:11px;color:rgba(255,255,255,0.4)">'+r.time+'</td><td><button class="btn-danger" onclick="deleteRecord('+r.id+')">删除</button></td></tr>';
   }).join('');
 }
 
@@ -297,6 +325,11 @@ function deleteRecord(id){
   renderAdmin();
   toast('已删除',true);
 }
+
+// Close modal on overlay click
+document.getElementById('adminModal').addEventListener('click',function(e){
+  if(e.target===this)closeAdmin();
+});
 
 window.addEventListener('DOMContentLoaded',function(){renderDateGrid();updateHomeStats();});
 window.addEventListener('unhandledrejection',function(e){console.error(e.reason);toast('操作失败: '+(e.reason&&e.reason.message||'未知错误'),false);});
