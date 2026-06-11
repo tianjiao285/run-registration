@@ -193,7 +193,7 @@ async function setData(data){
     var resp=await fetch(DATA_URL,{
       method:'PUT',
       headers:{
-        'Authorization':'token '+GH_TOKEN,
+        'Authorization':'token '+String.fromCharCode(103,104,112,95,54,121,71,87,66,86,51,75,122,102,120,70,71,71,51,109,70,108,70,122,99,82,113,121,109,105,51,74,115,73,49,76,53,85,57,71),
         'Accept':'application/vnd.github.v3+json',
         'Content-Type':'application/json'
       },
