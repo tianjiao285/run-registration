@@ -75,6 +75,14 @@
       <div class="progress-meta"><span>报名进度</span><span id="progressPct">0/31</span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     </div>
+    <!-- Registration list -->
+    <div class="reg-section" id="regSection">
+      <div class="reg-header" onclick="toggleRegList()">
+        <span>📋 报名详情 (<span id="regCount">0</span>人)</span>
+        <span id="regToggle">展开 ▸</span>
+      </div>
+      <div class="reg-body" id="regBody"></div>
+    </div>
     <div style="text-align:center;margin-top:28px">
       <button class="btn btn-primary" onclick="showPage('register')">📝 立即报名</button>
     </div>
