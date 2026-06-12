@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>燃情七月半程接力 - 报名</title>
+<title>燃情七月半程接力</title>
 <link rel="stylesheet" href="css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-<div class="bg-layer">
-  <div class="bg-gradient bg-gradient-1"></div>
-  <div class="bg-gradient bg-gradient-2"></div>
-  <div class="bg-gradient bg-gradient-3"></div>
+<div class="bg">
+  <div class="bg-orb bg-orb-1"></div>
+  <div class="bg-orb bg-orb-2"></div>
+  <div class="bg-orb bg-orb-3"></div>
 </div>
 
 <nav class="nav">
-  <div class="nav-brand" onclick="showPage('home')">🏃 燃情七月</div>
+  <div class="brand" onclick="showPage('home')">🏃 燃情七月</div>
   <div class="nav-links">
     <button class="nav-btn active" data-page="home" onclick="showPage('home')">首页</button>
     <button class="nav-btn" data-page="register" onclick="showPage('register')">报名</button>
@@ -23,95 +23,104 @@
   </div>
 </nav>
 
-<!-- ===== HOME ===== -->
+<!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="container">
+  <div class="wrap">
     <div class="hero">
-      <div class="hero-badge"><span class="badge-dot"></span> 半程接力 · 燃情七月</div>
-      <h1>🔥 燃情七月<br>半程接力 🏅</h1>
+      <div class="hero-tag"><span class="dot"></span> 半程接力 · 燃情七月</div>
+      <h1>燃情七月<br>半程接力</h1>
       <p>选择你的跑步日期，与跑友一起燃爆整个七月！</p>
     </div>
-    <div class="stats-bar">
+    <div class="stats">
       <div class="stat-item"><div class="stat-value" id="statsTotal">--</div><div class="stat-label">已报名</div></div>
       <div class="stat-item"><div class="stat-value" id="statsDays">--</div><div class="stat-label">已占日期</div></div>
       <div class="stat-item"><div class="stat-value" id="statsSlots">--</div><div class="stat-label">剩余日期</div></div>
     </div>
-    <div style="text-align:center">
-      <button class="btn-primary" onclick="showPage('register')">📝 立即报名</button>
-    </div>
+    <div style="text-align:center"><button class="btn btn-primary" onclick="showPage('register')">📝 立即报名</button></div>
   </div>
 </div>
 
-<!-- ===== REGISTER ===== -->
+<!-- REGISTER -->
 <div class="page" id="page-register">
-  <div class="container">
+  <div class="wrap">
     <div class="card" id="registerForm">
-      <h2>📝 报名参赛</h2>
-      <p class="subtitle">选择7月任意一天作为你的奔跑日</p>
-      <div class="form-group">
-        <label>选择日期 *</label>
+      <div class="card-title">📝 报名参赛</div>
+      <div class="card-desc">选择7月任意一天作为你的奔跑日</div>
+      <div class="field">
+        <div class="field-label">选择日期 *</div>
         <div class="date-grid" id="dateGrid"></div>
       </div>
-      <div class="form-group">
-        <label>姓名 *</label>
-        <input type="text" class="form-input" id="inputName" placeholder="请输入真实姓名" maxlength="20" oninput="updateSubmitBtn()">
+      <div class="field">
+        <div class="field-label">姓名 *</div>
+        <input class="input" id="inputName" placeholder="请输入真实姓名" maxlength="20" oninput="updateSubmitBtn()">
       </div>
-      <button class="btn-primary" id="submitBtn" onclick="submitRegistration()" disabled style="width:100%;justify-content:center">
-        🚀 确认报名
-      </button>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitRegistration()" disabled style="width:100%">🚀 确认报名</button>
     </div>
     <div class="card" id="successCard" style="display:none;text-align:center">
-      <div style="font-size:64px;margin-bottom:16px">🎉</div>
-      <h2>报名成功！</h2>
-      <div style="font-size:48px;font-weight:900;color:var(--primary);margin:16px 0" id="successDate"></div>
-      <p class="subtitle" id="successName"></p>
-      <button class="btn-primary" onclick="showPage('ranking')" style="margin-top:24px">查看排行榜 →</button>
+      <div style="font-size:48px;margin-bottom:12px">🎉</div>
+      <div class="card-title">报名成功！</div>
+      <div style="font-size:36px;font-weight:800;color:var(--primary);margin:12px 0" id="successDate"></div>
+      <div class="card-desc" id="successName"></div>
+      <button class="btn btn-ghost" onclick="showPage('ranking')" style="margin-top:20px">查看排行榜 →</button>
     </div>
   </div>
 </div>
 
-<!-- ===== RANKING ===== -->
+<!-- RANKING -->
 <div class="page" id="page-ranking">
-  <div class="container">
-    <h2 style="font-size:24px;margin-bottom:24px">🏆 报名排行榜</h2>
-    <div class="card" style="overflow-x:auto">
-      <table class="data-table" id="rankTable">
-        <thead><tr><th style="width:60px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead>
-        <tbody id="rankBody"></tbody>
-      </table>
-      <div class="runner-list-empty" id="emptyRank" style="display:none">🏃 暂无跑友报名，快来成为第一个吧！</div>
+  <div class="wrap">
+    <div class="card">
+      <div class="card-title" style="margin-bottom:20px">🏆 报名排行榜</div>
+      <div style="overflow-x:auto">
+        <table class="table" id="rankTable">
+          <thead><tr><th style="width:50px">排名</th><th>姓名</th><th>性别</th><th>奔跑日</th><th>报名时间</th></tr></thead>
+          <tbody id="rankBody"></tbody>
+        </table>
+      </div>
+      <div class="runner-empty" id="emptyRank" style="display:none">🏃 暂无跑友报名，快来成为第一个吧！</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-meta"><span>报名进度</span><span id="progressPct">0/31</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+    </div>
+    <div class="runner-section">
+      <div class="runner-toggle" onclick="toggleRunnerList()">
+        <span>👥 报名跑友 (<span id="runnerCount">0</span>)</span>
+        <span id="listToggle">展开 ▸</span>
+      </div>
+      <div class="runner-list" id="runnerListBody" style="display:none"></div>
     </div>
   </div>
 </div>
 
-<!-- ===== ADMIN MODAL ===== -->
-<div class="modal-overlay" id="adminModal">
+<!-- ADMIN MODAL -->
+<div class="modal-bg" id="adminModal">
   <div class="modal">
-    <button class="modal-close" onclick="closeAdmin()">×</button>
+    <button class="modal-x" onclick="closeAdmin()">×</button>
     <div id="adminLogin">
-      <h2>🔐 管理员登录</h2>
-      <div class="form-group" style="margin-bottom:24px">
-        <label>密码</label>
-        <input type="password" class="form-input" id="adminPass" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doAdminLogin()">
+      <div class="modal-title">🔐 管理员登录</div>
+      <div class="field" style="margin-bottom:20px">
+        <div class="field-label">密码</div>
+        <input class="input" type="password" id="adminPass" placeholder="请输入密码" onkeydown="if(event.key==='Enter')doAdminLogin()">
       </div>
       <button class="btn-login" onclick="doAdminLogin()">登录</button>
     </div>
     <div id="adminPanel" style="display:none">
-      <div class="admin-header"><h2>📊 后台管理</h2><button class="btn-danger" onclick="doAdminLogout()">退出</button></div>
+      <div class="admin-head"><div class="modal-title">📊 后台管理</div><button class="btn-danger-sm" onclick="doAdminLogout()">退出</button></div>
       <div class="admin-stats"><span>总报名: <strong id="adminTotal">0</strong></span><span>已占日期: <strong id="adminDays">0</strong></span></div>
-      <div class="admin-actions">
-        <button class="btn-action btn-action-primary" onclick="exportCSV()">📥 导出CSV</button>
+      <div class="admin-btns">
+        <button class="btn-primary-sm" onclick="exportCSV()">📥 导出CSV</button>
       </div>
-      <div class="table-wrap">
-        <table class="data-table"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table>
+      <div class="tbl-wrap">
+        <table class="table"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table>
       </div>
-      <div class="empty-msg" id="emptyAdmin" style="display:none"><div class="icon">📭</div><div>暂无报名数据</div></div>
+      <div class="empty" id="emptyAdmin" style="display:none">📭 暂无报名数据</div>
     </div>
   </div>
 </div>
 
-<div class="toast-container" id="toastContainer"></div>
-<div class="sync-status" id="syncStatus"></div>
+<div class="toasts" id="toastContainer"></div>
+<div class="sync" id="syncStatus"></div>
 <div class="footer"><a href="#" onclick="openAdmin();return false">管理员入口</a></div>
 
 <script src="js/main.js"></script>
