@@ -5,47 +5,36 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>大港乐跑团 - 燃情七月半程接力</title>
 <link rel="stylesheet" href="css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
 
-<!-- ===== ANIMATED BACKGROUND ===== -->
+<!-- ===== DYNAMIC BACKGROUND ===== -->
 <div class="bg">
-  <!-- Gradient orbs -->
+  <div class="bg-scroll" id="bgScroll"></div>
   <div class="bg-orb bg-orb-1"></div>
   <div class="bg-orb bg-orb-2"></div>
   <div class="bg-orb bg-orb-3"></div>
-
-  <!-- Speed lines -->
-  <svg class="speed-lines" viewBox="0 0 1440 900" preserveAspectRatio="none">
-    <line class="sl sl-1" x1="0" y1="200" x2="1440" y2="180"/>
-    <line class="sl sl-2" x1="0" y1="400" x2="1440" y2="370"/>
-    <line class="sl sl-3" x1="0" y1="600" x2="1440" y2="560"/>
-    <line class="sl sl-4" x1="0" y1="300" x2="1440" y2="320"/>
-    <line class="sl sl-5" x1="0" y1="700" x2="1440" y2="680"/>
-    <line class="sl sl-6" x1="0" y1="150" x2="1440" y2="170"/>
-    <line class="sl sl-7" x1="0" y1="500" x2="1440" y2="530"/>
-    <line class="sl sl-8" x1="0" y1="800" x2="1440" y2="780"/>
-  </svg>
-
-  <!-- Particles -->
-  <div class="particles" id="particles"></div>
-
-  <!-- Runner silhouettes -->
-  <div class="runner runner-back">
-    <svg viewBox="0 0 120 120"><path d="M60 20 C54 20, 48 26, 46 32 L42 44 L30 50 L34 54 L44 48 L48 56 L42 74 L46 78 L50 62 L55 62 L59 78 L62 74 L56 56 L60 48 L70 54 L74 50 L62 44 L58 32 C56 26, 50 20, 60 20Z" fill="none" stroke="rgba(255,107,53,0.12)" stroke-width="2"/></svg>
+  <div class="bg-particles" id="bgParticles"></div>
+  <div class="runner runner-far">
+    <svg viewBox="0 0 120 120"><path d="M60 18 C52 18,44 25,42 32 L38 45 L26 52 L30 56 L40 50 L44 58 L38 76 L42 80 L46 64 L52 64 L56 80 L58 76 L52 60 L56 50 L66 56 L70 52 L58 45 L54 32 C52 25,48 18,60 18Z" fill="none" stroke="rgba(255,107,53,0.2)" stroke-width="2.5"/></svg>
   </div>
   <div class="runner runner-mid">
-    <svg viewBox="0 0 120 120"><path d="M60 18 C53 18, 46 25, 44 32 L40 45 L28 52 L32 56 L42 50 L46 58 L40 76 L44 80 L48 64 L53 64 L57 80 L60 76 L54 58 L58 50 L68 56 L72 52 L60 45 L56 32 C54 25, 47 18, 60 18Z" fill="none" stroke="rgba(255,107,53,0.18)" stroke-width="2.5"/><circle cx="60" cy="14" r="6" fill="none" stroke="rgba(255,107,53,0.18)" stroke-width="2.5"/></svg>
+    <svg viewBox="0 0 120 120"><path d="M60 16 C52 16,44 24,42 32 L38 46 L26 54 L30 58 L40 52 L44 60 L38 78 L42 82 L46 66 L52 66 L56 82 L58 78 L52 60 L56 52 L66 58 L70 54 L58 46 L54 32 C52 24,48 16,60 16Z" fill="none" stroke="rgba(255,107,53,0.25)" stroke-width="3"/><circle cx="60" cy="12" r="7" fill="none" stroke="rgba(255,107,53,0.25)" stroke-width="3"/></svg>
   </div>
-  <div class="runner runner-front">
-    <svg viewBox="0 0 120 120"><path d="M60 16 C52 16, 44 24, 42 32 L38 46 L26 54 L30 58 L40 52 L44 60 L38 78 L42 82 L46 66 L52 66 L56 82 L58 78 L52 60 L56 52 L66 58 L70 54 L58 46 L54 32 C52 24, 48 16, 60 16Z" fill="none" stroke="rgba(255,107,53,0.25)" stroke-width="3"/><circle cx="60" cy="12" r="7" fill="none" stroke="rgba(255,107,53,0.25)" stroke-width="3"/></svg>
+  <div class="runner runner-near">
+    <svg viewBox="0 0 120 120"><path d="M60 14 C50 14,42 22,40 30 L36 44 L24 52 L28 56 L38 50 L42 58 L36 76 L40 80 L44 64 L50 64 L54 80 L56 76 L50 58 L54 50 L64 56 L68 52 L56 44 L52 30 C50 22,46 14,60 14Z" fill="none" stroke="rgba(255,107,53,0.35)" stroke-width="3.5"/><circle cx="60" cy="10" r="8" fill="none" stroke="rgba(255,107,53,0.35)" stroke-width="3.5"/></svg>
   </div>
-
-  <!-- Energy rings -->
-  <div class="energy-ring ring-1"></div>
-  <div class="energy-ring ring-2"></div>
-  <div class="energy-ring ring-3"></div>
+  <div class="ring ring-1"></div>
+  <div class="ring ring-2"></div>
+  <div class="ring ring-3"></div>
+  <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
+  <div class="streak"></div><div class="streak"></div><div class="streak"></div><div class="streak"></div>
+  <div class="glow-dot" style="top:20%;left:15%;width:4px;height:4px;background:var(--primary);animation-delay:0s"></div>
+  <div class="glow-dot" style="top:60%;left:80%;width:3px;height:3px;background:var(--secondary);animation-delay:1s"></div>
+  <div class="glow-dot" style="top:40%;left:50%;width:5px;height:5px;background:var(--accent);animation-delay:2s"></div>
+  <div class="glow-dot" style="top:75%;left:25%;width:3px;height:3px;background:var(--primary);animation-delay:0.5s"></div>
+  <div class="glow-dot" style="top:30%;left:70%;width:4px;height:4px;background:var(--secondary);animation-delay:1.5s"></div>
 </div>
 
 <!-- ===== NAV ===== -->
@@ -57,7 +46,7 @@
   </div>
 </nav>
 
-<!-- ===== HOME ===== -->
+<!-- HOME -->
 <div class="page active" id="page-home">
   <div class="wrap">
     <div class="hero">
@@ -70,12 +59,10 @@
       <div class="stat-item"><div class="stat-value" id="statsDays">--</div><div class="stat-label">已占日期</div></div>
       <div class="stat-item"><div class="stat-value" id="statsSlots">--</div><div class="stat-label">剩余日期</div></div>
     </div>
-    <!-- Progress -->
     <div class="progress-wrap">
       <div class="progress-meta"><span>报名进度</span><span id="progressPct">0/31</span></div>
       <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
     </div>
-    <!-- Registration list -->
     <div class="reg-section" id="regSection">
       <div class="reg-header" onclick="toggleRegList()">
         <span>📋 报名详情 (<span id="regCount">0</span>人)</span>
@@ -89,7 +76,7 @@
   </div>
 </div>
 
-<!-- ===== REGISTER ===== -->
+<!-- REGISTER -->
 <div class="page" id="page-register">
   <div class="wrap">
     <div class="card" id="registerForm">
@@ -115,7 +102,7 @@
   </div>
 </div>
 
-<!-- ===== ADMIN MODAL ===== -->
+<!-- ADMIN MODAL -->
 <div class="modal-bg" id="adminModal">
   <div class="modal">
     <button class="modal-x" onclick="closeAdmin()">×</button>
@@ -130,9 +117,7 @@
     <div id="adminPanel" style="display:none">
       <div class="admin-head"><div class="modal-title">📊 后台管理</div><button class="btn-danger-sm" onclick="doAdminLogout()">退出</button></div>
       <div class="admin-stats"><span>总报名: <strong id="adminTotal">0</strong></span><span>已占日期: <strong id="adminDays">0</strong></span></div>
-      <div class="admin-btns">
-        <button class="btn-primary-sm" onclick="exportCSV()">📥 导出CSV</button>
-      </div>
+      <div class="admin-btns"><button class="btn-primary-sm" onclick="exportCSV()">📥 导出CSV</button></div>
       <div class="tbl-wrap">
         <table class="table"><thead><tr><th>ID</th><th>姓名</th><th>手机</th><th>性别</th><th>年龄</th><th>奔跑日</th><th>备注</th><th>时间</th><th>操作</th></tr></thead><tbody id="adminBody"></tbody></table>
       </div>
@@ -148,6 +133,93 @@
 <script src="js/main.js"></script>
 <script>
 document.getElementById('adminModal').addEventListener('click',function(e){if(e.target===this)closeAdmin();});
+
+// ===== Scroll-reactive background =====
+(function(){
+  let bgScroll = document.getElementById('bgScroll');
+  let orbs = document.querySelectorAll('.bg-orb');
+  let scrollTicking = false;
+  window.addEventListener('scroll', function(){
+    if (!scrollTicking) {
+      requestAnimationFrame(function(){
+        let scrollY = window.scrollY;
+        let maxScroll = document.body.scrollHeight - window.innerHeight;
+        let progress = maxScroll > 0 ? scrollY / maxScroll : 0;
+        // Show scroll gradient after 100px
+        if (bgScroll) bgScroll.classList.toggle('active', scrollY > 100);
+        // Parallax orbs
+        orbs.forEach(function(orb, i){
+          let speed = (i + 1) * 15;
+          orb.style.transform = 'translateY(' + (scrollY * speed / 100) + 'px)';
+        });
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  });
+})();
+
+// ===== Particle system (canvas) =====
+(function(){
+  let container = document.getElementById('bgParticles');
+  if (!container) return;
+  let canvas = document.createElement('canvas');
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%';
+  container.appendChild(canvas);
+  let ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId;
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+  // Create particles
+  for (let i = 0; i < 50; i++) {
+    particles.push({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 2 + 0.5,
+      dx: (Math.random() - 0.5) * 0.3,
+      dy: -Math.random() * 0.5 - 0.1,
+      color: ['rgba(255,107,53,', 'rgba(255,46,99,', 'rgba(255,210,63,'][Math.floor(Math.random()*3)],
+      alpha: Math.random() * 0.5 + 0.2
+    });
+  }
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(function(p) {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, Math.max(0.5, p.r), 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.fill();
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.y < -10) { p.y = canvas.height + 10; p.x = Math.random() * canvas.width; }
+      if (p.x < -10) p.x = canvas.width + 10;
+      if (p.x > canvas.width + 10) p.x = -10;
+    });
+    // Draw faint connection lines between close particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        let dx = particles[i].x - particles[j].x;
+        let dy = particles[i].y - particles[j].y;
+        let dist = Math.sqrt(dx*dx + dy*dy);
+        if (dist < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = 'rgba(255,107,53,' + (0.06 * (1 - dist/120)) + ')';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+    animId = requestAnimationFrame(draw);
+  }
+  draw();
+})();
 </script>
 </body>
 </html>
