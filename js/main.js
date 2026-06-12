@@ -108,6 +108,46 @@ function updateProgress() {
   let pctEl = document.getElementById('progressPct');
   if (fill) fill.style.width = pct + '%';
   if (pctEl) pctEl.textContent = d.length + '/31';
+  // Update registration list
+  updateRegList();
+}
+
+let _regListOpen = false;
+
+function updateRegList() {
+  let el = document.getElementById('regCount');
+  if (el) el.textContent = _data.length;
+  let body = document.getElementById('regBody');
+  if (!body) return;
+  let sorted = _data.slice().sort(function(a, b) { return a.day - b.day; });
+  if (!sorted.length) {
+    body.innerHTML = '<div class="reg-empty">📭 暂无报名，快来成为第一个！</div>';
+    return;
+  }
+  if (_regListOpen) {
+    body.innerHTML = sorted.map(function(r, i) {
+      return '<div class="reg-item"><span class="reg-num">' + (i + 1) + '</span><span class="reg-name">' + escapeHtml(r.name) + '</span><span class="reg-date">7月' + r.day + '日</span></div>';
+    }).join('');
+  }
+}
+
+function toggleRegList() {
+  let body = document.getElementById('regBody');
+  let toggle = document.getElementById('regToggle');
+  if (!body) return;
+  _regListOpen = !_regListOpen;
+  body.style.display = _regListOpen ? 'block' : 'none';
+  if (toggle) toggle.textContent = _regListOpen ? '收起 ▾' : '展开 ▸';
+  if (_regListOpen) {
+    let sorted = _data.slice().sort(function(a, b) { return a.day - b.day; });
+    if (!sorted.length) {
+      body.innerHTML = '<div class="reg-empty">📭 暂无报名，快来成为第一个！</div>';
+    } else {
+      body.innerHTML = sorted.map(function(r, i) {
+        return '<div class="reg-item"><span class="reg-num">' + (i + 1) + '</span><span class="reg-name">' + escapeHtml(r.name) + '</span><span class="reg-date">7月' + r.day + '日</span></div>';
+      }).join('');
+    }
+  }
 }
 
 let selectedDay = null;
