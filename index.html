@@ -125,9 +125,9 @@
 <!-- REGISTER -->
 <div class="page" id="page-register">
   <div class="wrap">
-    <div class="card" id="registerForm">
-      <div class="card-title">📝 报名参赛</div>
-      <div class="card-desc">选择7月任意一天作为你的奔跑日</div>
+    <div class="glass" id="registerForm">
+      <div class="glass-title">📝 报名参赛</div>
+      <div class="glass-desc">选择7月任意一天作为你的奔跑日</div>
       <div class="field">
         <div class="field-label">选择日期 *</div>
         <div class="date-grid" id="dateGrid"></div>
@@ -138,11 +138,11 @@
       </div>
       <button class="btn btn-primary" id="submitBtn" onclick="submitRegistration()" disabled style="width:100%">🚀 确认报名</button>
     </div>
-    <div class="card" id="successCard" style="display:none;text-align:center">
+    <div class="glass" id="successCard" style="display:none;text-align:center">
       <div style="font-size:48px;margin-bottom:12px">🎉</div>
-      <div class="card-title">报名成功！</div>
+      <div class="glass-title">报名成功！</div>
       <div style="font-size:36px;font-weight:800;color:var(--primary);margin:12px 0" id="successDate"></div>
-      <div class="card-desc" id="successName"></div>
+      <div class="glass-desc" id="successName"></div>
       <button class="btn btn-ghost" onclick="showPage('home')" style="margin-top:20px">← 返回首页</button>
     </div>
   </div>
